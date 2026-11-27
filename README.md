@@ -1,15 +1,32 @@
+# Combined DEST extension: omega, SU1, Zermelo, and Z2 strength
+
+Based on the verified main repository; all ten original Lean source files
+are unchanged. The focused three objectives are retained. This combined
+revision also includes the consistency-strength modules from v3 and NEW
+bridges to the original Infinity-free theory, including its closed axiom
+scheme and soundness endpoint.
+
+- [FOCUSED_PROOF.md](FOCUSED_PROOF.md): omega, SU1+TI1, hereditarily uniform Zermelo domain.
+- [EXACT_STRENGTH_ARGUMENT.md](EXACT_STRENGTH_ARGUMENT.md): mathematical argument for equiconsistency with Z2 (without SU), using published reductions.
+- [STRENGTH_AUDIT.md](STRENGTH_AUDIT.md): what is and is not kernel-verifiable in this revision.
+- [FOCUSED_AUDIT.md](FOCUSED_AUDIT.md): the three focused checks.
+
+All 44 theorem targets are subject to the ordinary build, formal audit and
+five locks. Exact Z2 equiconsistency is NOT fully formalized, and a green
+workflow does not certify it. The external weak-metatheory argument and
+published reductions remain outside Lean. The new sources have not been
+compiled locally. Use the patch from the verified main branch or upload the
+complete archive to a new branch. No new proof is certified green in advance.
+
+---
+
 # Double Extension Set Theory (DEST) — semantic and five-lock verification
 
 Lean 4 formalization draft of the corrected double-extension theory and its
 well-founded first-membership model. Pinned to Lean/mathlib v4.36.0 for the five-lock verification tools.
 
-**Verification status (repair v2):** the supplied GitHub CI log reports successful
-compilation of the core model and reference theory/logic under Lean 4.36.0.
-The overall run stopped in the semantic bridge. This release addresses the
-four reported semantic bridge errors; its new proofs have not yet been compiled.
-The formal semantic audit and five locks remain pending a fresh CI run.
-See `REPAIR_NOTES.md`.
-
+**Verification status:** the supplied five-lock evidence certifies the original
+baseline. All additions in this combined extension are uncompiled here.
 ## Main theorem
 
 `DEST.exists_DEST_model` in `DEST/Model.lean`:
@@ -60,7 +77,7 @@ membership relations. It is not induction on the second membership relation.
    `PASS.txt`, `verdict.tsv`, `semantic-verdict.tsv`, comparator and individual kernel logs, the three
    NDJSON exports, and SHA-256 checksums. A failed run does not get a PASS marker.
 4. The challenge fixture is deliberately incomplete: it states the obligation but
-   is not proof code. Only `Challenge.lean` may contain its four statement-fixture placeholders;
+   is not proof code. Only `Challenge.lean` may contain its statement-fixture placeholders;
    it is never imported by `Solution.lean`. The solution source scan and axiom
    audit disallow proof holes and nonstandard axioms.
 
@@ -95,6 +112,6 @@ DEST. The new files `DEST/ReferenceTheory.lean`, `DEST/ReferenceLogic.lean`, and
 translation from every permitted formula, interpretation in the same model,
 induction and a syntactic soundness bridge. `Solution.lean` adds three audited
 endpoints without changing the original mathematical construction. Comparator
-checks all four endpoint statements and all five locks replay their proof export.
+checks the frozen endpoint statements and all five locks replay their proof export.
 The semantic report is mandatory, but natural-language specification review and
 the external ZFC-relative interpretation remain human mathematical tasks.

@@ -1,3 +1,14 @@
+> Combined-extension notice: the focused checks below are retained. See
+> [STRENGTH_AUDIT.md](STRENGTH_AUDIT.md) for the additional Z2-strength
+> endpoints and their limitations. The full frozen Comparator list now has
+> 44 targets. No exact-strength kernel certificate is issued.
+
+# Focused extension verification
+
+The original verification protocol is retained. `scripts/five-lock.sh` now checks `baseline.sha256`, requires F1–F3 in `focused-verdict.tsv`, exports all eight principal theorem targets, and archives the focused proof and audit documentation. See FOCUSED_AUDIT.md for the limits of the formal verification. The new proof source has not been compiled locally.
+
+---
+
 # DEST semantic and five-lock verification
 
 **Status at packaging:** source and configuration prepared; no Lean executable

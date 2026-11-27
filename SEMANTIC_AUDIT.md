@@ -1,3 +1,8 @@
+> Combined-extension notice: the focused checks below are retained. See
+> [STRENGTH_AUDIT.md](STRENGTH_AUDIT.md) for the additional Z2-strength
+> endpoints and their limitations. The full frozen Comparator list now has
+> 44 targets. No exact-strength kernel certificate is issued.
+
 # Dedicated DEST semantic audit (S1–S7)
 
 **Status:** candidate formalization, not compiled in the authoring environment.

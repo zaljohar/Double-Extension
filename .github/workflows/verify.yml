@@ -1,1 +1,51 @@
-
+name: DEST five-lock verification
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      allow_no_sandbox:
+        description: 'Explicitly allow reduced-isolation Comparator run (trusted source only)'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install sandbox and pinned Lean
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap
+          # GitHub Ubuntu runners may restrict unprivileged user namespaces.
+          # Enable them on this ephemeral runner when the setting exists.
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+          curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Fetch pinned dependencies and mathlib cache
+        run: |
+          lean --version
+          lake update
+          lake exe cache get
+      - name: Standard Lean and all five verification locks
+        env:
+          DEST_ALLOW_NO_SANDBOX: ${{ github.event_name == 'workflow_dispatch' && inputs.allow_no_sandbox && '1' || '0' }}
+        run: bash scripts/five-lock.sh
+      - name: Upload verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DEST-five-lock-verification-evidence
+          path: |
+            five-lock-evidence/
+            axiom-audit.log
+          if-no-files-found: warn
+          retention-days: 30

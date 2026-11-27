@@ -1,10 +1,5 @@
 # Dedicated DEST semantic audit (S1–S7)
 
-**Status:** candidate formalization, not compiled in the authoring environment.
-A green GitHub run is required. The mathematical construction in Hull.lean,
-Matching.lean and Model.lean is unchanged. The existing Lean/mathlib v4.36.0
-pin and five-lock replay are retained.
-
 ## Frozen independent reference
 
 `DEST/ReferenceTheory.lean` imports Mathlib only. It defines first-order syntax

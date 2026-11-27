@@ -1,4 +1,4 @@
-import Mathlib
+import Mathlib.Basic.Countable.Basic
 
 set_option autoImplicit false
 set_option maxHeartbeats 0

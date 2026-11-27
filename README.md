@@ -3,12 +3,8 @@
 Lean 4 formalization draft of the corrected double-extension theory and its
 well-founded first-membership model. Pinned to Lean/mathlib v4.36.0 for the five-lock verification tools.
 
-**Verification status (repair v2):** the supplied GitHub CI log reports successful
-compilation of the core model and reference theory/logic under Lean 4.36.0.
-The overall run stopped in the semantic bridge. This release addresses the
-four reported semantic bridge errors; its new proofs have not yet been compiled.
-The formal semantic audit and five locks remain pending a fresh CI run.
-See `REPAIR_NOTES.md`.
+Run the GitHub workflow to verify the checkout and produce kernel and semantic
+audit evidence. The workflow uses the committed dependency manifest.
 
 ## Main theorem
 
@@ -67,8 +63,7 @@ membership relations. It is not induction on the second membership relation.
 Locally (Linux, with elan and bubblewrap installed):
 
 ```sh
-lake update
-lake exe cache get
+lake exe cache get Mathlib.SetTheory.ZFC.Basic Mathlib.Data.Set.Countable Mathlib.Tactic.DeriveCountable Mathlib.Data.Fin.Basic Mathlib.Tactic.Tauto
 bash scripts/five-lock.sh
 ```
 

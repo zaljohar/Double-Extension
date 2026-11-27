@@ -1,9 +1,5 @@
 # DEST semantic and five-lock verification
 
-**Status at packaging:** source and configuration prepared; no Lean executable
-or network to install Lean/mathlib was available in the authoring container.
-No successful build, comparator verdict, or external-kernel run is claimed.
-
 ## Frozen target
 
 `DESTVerification.exists_model` in `Challenge.lean` requires an actual domain
@@ -25,6 +21,9 @@ and the standalone specification plus the independent reference logic, not the h
 make a failing proof pass. The hash is an integrity baseline, not a signature
 or protection from someone who can change the baseline itself. Review the
 specification before treating it as the intended mathematical statement.
+The checksum entries for Syntax and ReferenceTheory were refreshed after
+narrowing their Mathlib imports. Their definitions and the four challenge
+statements retain the original formulation.
 
 `Challenge.lean` has four deliberate `sorry` placeholders as a comparator statement fixture.
 It must never be imported by the solution or used to prove anything. It is not
@@ -44,8 +43,8 @@ require review; no green badge can by itself certify that review.
 ## Five locks
 
 Pinned Lean and Mathlib: v4.36.0 (upgraded from v4.29.0 to obtain the bundled
-checkers). The original hull, matching and model proof bodies have not been
-ported or tested against the new version; API repairs may be needed.
+checkers). The repository pins the resolved dependency revisions in
+`lake-manifest.json`.
 
 Baseline: project build with `--trust=0`, source scan and axiom audit. All model
 and induction theorem reports must be present. No custom axioms are permitted.

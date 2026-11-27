@@ -64,10 +64,7 @@ instance : Countable Outside := inferInstance
 noncomputable instance : Countable FreeExt := by
   letI : Countable ↥Defs := defs_countable
   exact Function.Injective.countable (f := fun s : FreeExt => (⟨s.val,s.property.1⟩ : ↥Defs))
-    (by
-      intro x y h
-      apply Subtype.ext
-      exact congrArg (fun s : ↥Defs => s.val) h)
+    (by intro x y h; apply Subtype.ext; exact congrArg (fun s : ↥Defs => s.val) h)
 
 @[simp] theorem extn_eq (a : Carrier) : extn (.eq 0 1) [a] = {a} := by
   ext x
@@ -356,14 +353,12 @@ theorem numeral_succ (a : Carrier) (n : ℕ) :
 theorem natural_induction (P : Carrier → Prop) (h0 : P (numeral 0))
     (hs : ∀ n : ℕ, P (numeral n) → P (numeral (n+1))) :
     ∀ a, mem₁ a omegaObj → P a := by
-  have hAll : ∀ n : ℕ, P (numeral n) := by
-    intro n
-    induction n with
-    | zero => exact h0
-    | succ n ih => exact hs n ih
   intro a ha
   obtain ⟨n,rfl⟩ := (omega_exact a).mp ha
-  exact hAll n
+  clear ha
+  induction n with
+  | zero => exact h0
+  | succ n ih => exact hs n ih
 
 /-- The ordinary first-language definition of an inductive set. -/
 def IsInductive (a : Carrier) : Prop :=

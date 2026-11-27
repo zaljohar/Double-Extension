@@ -8,3 +8,28 @@ Based on the reported Lean 4.36.0 CI failure in `DEST/Model.lean` at lines 67 an
 All theorem statements, reference axioms, comparator targets, semantic checks, and verification workflows are unchanged from the semantic-five-lock release. The original log lists only the four earlier specification checksums; this full release includes the two additional reference files and their checksums. Replace the previous repository contents with this release, including hidden `.github` files.
 
 Validation: archive integrity, specification checksums, and script syntax only. No Lean executable is available in the local preparation environment; native compilation, semantic proofs, and independent checker runs are not yet verified.
+
+
+# Repair v2 — semantic bridge elaboration
+
+Based on the second CI log supplied by the user. `DEST.Model`, `DEST.Hull`,
+`DEST.Matching`, `DEST.Syntax`, `DEST.Specification`, `DEST.ReferenceTheory`,
+`DEST.ReferenceLogic`, and `DEST` were reported built with Lean 4.36.0 and
+`--trust=0` for the project. The overall build failed in `DEST.SemanticAudit`.
+
+- Add the proved simplification lemma `DESTSemantic.push_push_one` to
+  evaluate index 1 in a twice-extended variable environment. This addresses
+  the residual goals in `extension_correct`, `inductive_correct`, and
+  `omega_correct`. Index 1 denotes the second newest bound variable.
+- Qualify `DESTReference.uniformity` in `uniformity_correct` to disambiguate
+  it from Mathlib's topological uniformity.
+
+No model construction file, reference theory, axiom scheme, theorem statement,
+checksum fixture, or checker requirement has been weakened or modified.
+The only Lean file edited for this repair is `DEST/SemanticAudit.lean`.
+The new lemma is an auxiliary proved equality, not an axiom.
+
+Status: static repair only. The latest supplied log demonstrates compilation
+of the core model and reference logic; the revised semantic bridge and all
+subsequent verification stages require a fresh CI run. Lean is unavailable
+in the local preparation environment.

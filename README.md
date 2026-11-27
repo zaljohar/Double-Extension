@@ -3,10 +3,12 @@
 Lean 4 formalization draft of the corrected double-extension theory and its
 well-founded first-membership model. Pinned to Lean/mathlib v4.36.0 for the five-lock verification tools.
 
-**Verification status:** written and statically reviewed, not yet compiled.
-The authoring environment did not have a Lean installation or network access
-for installing dependencies. The first CI run is needed to check all elaboration
-and kernel obligations. This is not a claim of a green kernel run.
+**Verification status (repair v2):** the supplied GitHub CI log reports successful
+compilation of the core model and reference theory/logic under Lean 4.36.0.
+The overall run stopped in the semantic bridge. This release addresses the
+four reported semantic bridge errors; its new proofs have not yet been compiled.
+The formal semantic audit and five locks remain pending a fresh CI run.
+See `REPAIR_NOTES.md`.
 
 ## Main theorem
 

@@ -1,0 +1,561 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[top=27mm,bottom=27mm,left=29mm,right=29mm]{geometry}
+\usepackage{microtype}
+\usepackage{booktabs,array,tabularx,needspace,placeins}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={Double Extension Set Theory: Derived Infinity, Arithmetic Strength, and Uniform Models of Zermelo Set Theory},pdfsubject={Set theory and consistency strength},pdfauthor={Zuhair Al-Johar}}
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=*}
+\raggedbottom
+\setlength{\emergencystretch}{2em}
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+\allowdisplaybreaks[1]
+\numberwithin{equation}{section}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\DEST}{\mathsf{DEST}}
+\newcommand{\Ztwo}{\mathsf{Z}_2}
+\newcommand{\ZF}{\mathsf{ZF}}
+\newcommand{\ZFC}{\mathsf{ZFC}}
+\newcommand{\Zerm}{\mathsf{Z}}
+\newcommand{\TI}{\mathsf{TI}_1}
+\newcommand{\US}{\mathsf{US}_1}
+\newcommand{\Con}{\operatorname{Con}}
+\newcommand{\Unif}{\operatorname{U}}
+\newcommand{\Zero}{\operatorname{Zero}}
+\newcommand{\Succ}{\operatorname{Succ}}
+\newcommand{\Ind}{\operatorname{Ind}}
+\newcommand{\Nat}{\operatorname{N}}
+\newcommand{\Pow}{\mathcal P_1}
+\newcommand{\subone}{\subseteq_1}
+\newcommand{\extone}{\in_1}
+\newcommand{\exttwo}{\in_2}
+\newcommand{\code}[1]{\nolinkurl{#1}}
+\newcommand{\codename}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\defiff}{\mathrel{\vcentcolon\Longleftrightarrow}}
+\title{Double Extension Set Theory: Derived Infinity,\\ Arithmetic Strength, and Uniform Models of Zermelo Set Theory}
+\author{Zuhair Al-Johar\thanks{University of Baghdad}}
+\date{27 November 2026}
+\begin{document}
+\setcounter{footnote}{1}
+\maketitle
+\begin{abstract}
+We investigate Double Extension Set Theory (DEST), a first-order set theory with two extensional membership relations. Comprehension is unrestricted in the language of the first relation but specifies extensions with respect to the second. A uniformity scheme requires these extensions to coincide when the parameters are uniform and the object defined by comprehension is not a member of itself under the second relation. Relational natural-number induction suffices to derive the existence of a uniform least inductive set, all of whose members are uniform, without assuming an Infinity axiom. We establish equiconsistency with full second-order arithmetic in its first-order, two-sorted (Henkin) formulation and show that adding full first-membership set induction does not change this strength. The lower bound follows from an interpretation of parameter-free impredicative comprehension and Friedman's restriction theorem. For the upper bound, we construct finite-fragment models by an internal countable back-and-forth argument in the powerset-free constructible metatheory interpreted by Kanovei and Lyubetsky. The reductions also preserve first-order arithmetic consequences. With the additional axiom of uniform subsethood, we obtain an upper consistency bound from ZF and construct a single hereditarily uniform transitive set whose first-membership structure satisfies every axiom of Zermelo set theory, without assuming ambient set induction. We describe the accompanying Lean 4 formalization and distinguish its checked results from its explicit external metatheoretical premises.
+\end{abstract}
+\noindent\textbf{Keywords:} set theory; two membership relations; uniformity; second-order arithmetic; relative consistency; Zermelo set theory; formal verification.\\
+\textbf{2020 MSC:} 03E70, 03F35, 03B35, 03C15, 03E30.
+
+\section{Introduction}
+A comprehension principle need not assign the extension that it defines to the same membership relation used in the defining formula. Double Extension Set Theory (DEST) exploits this distinction. Its two relations, both extensional, play asymmetrical roles: the first determines the language of comprehension, whereas the second realizes the extension specified by comprehension. The uniformity scheme determines when the two extensions must agree. Thus unrestricted first-language comprehension does not entail unrestricted comprehension for the first membership relation.
+
+The aim of this paper is to determine the arithmetic strength of a precise formulation of DEST without an Infinity axiom and to investigate the effect of uniform subsethood. The arithmetic comparison is with full second-order arithmetic as an effectively axiomatized first-order theory, not with categorical second-order semantics. The relevant background includes Friedman's work on parameter-free comprehension \cite{friedman,gitman}, the set-theoretic interpretations of second-order arithmetic described by Simpson \cite{simpson}, and the explicit powerset-free interpretation of Kanovei and Lyubetsky \cite{kl,kl2}. The present construction differs from those interpretations: it builds a second membership relation on an inherited first-membership domain and controls exactly the objects on which the relations agree.
+
+Write $B$ for DEST with the axioms in Section~\ref{sec:axioms}, $T=B+\TI$, and $B^+ = B+\US$. Let $\Zerm$ denote Zermelo set theory with Foundation, Infinity and full Separation, but without Choice or Replacement. The principal conclusions are as follows.
+\begin{theorem}[Main results]\label{thm:main}
+\leavevmode
+\begin{enumerate}[label=(\roman*)]
+\item $B$ proves that there is a least inductive object $w$ such that both $w$ and all its first members are uniform.
+\item For every first-order arithmetic sentence $\sigma$, with its canonical von Neumann translation $\sigma^*$ into the first membership language,
+\[
+ \Ztwo\vdash\sigma\quad\Longleftrightarrow\quad B\vdash\sigma^*
+ \quad\Longleftrightarrow\quad T\vdash\sigma^*.
+\]
+In particular, the external consistency statements are equivalent:
+\[\Con(\Ztwo)\;\Longleftrightarrow\;\Con(B)\;\Longleftrightarrow\;\Con(T).\]
+\item Externally, $\Con(\ZF)\Longrightarrow\Con(B^+ + \TI)$.
+\item In every model of $B^+$ there is a single hereditarily uniform transitive object $W$ whose first-member structure satisfies $\Zerm$, including every instance of full Separation.
+\end{enumerate}
+\end{theorem}
+Part (ii) uses number-domain preservation in the two published reductions, rather than merely their equiconsistency conclusions. Part (iii) is a finite-fragment relative-consistency argument; it is not a claim that ZF proves its own consistency or that a single interpretation has been formalized. Part (iv) asserts satisfaction of the axioms and axiom schemes at the semantic level; an internal satisfaction predicate for arbitrary formula codes is not part of that result. These distinctions are also relevant to the formalization in Section~\ref{sec:lean}.
+
+\section{Language and axioms}\label{sec:axioms}
+The language $L$ has equality and two binary relation symbols $\extone,\exttwo$. Its first sublanguage $L_1$ contains only equality and $\extone$. All structures have a nonempty domain. Variables range over the entire domain unless otherwise stated. The following are formula abbreviations, not additional primitive symbols:
+\begin{align*}
+\Unif(a)&\defiff\forall x\,(x\extone a\leftrightarrow x\exttwo a),\\
+a\subone b&\defiff\forall x\,(x\extone a\to x\extone b),\\
+\Zero(z)&\defiff\forall x\,\neg(x\extone z),\\
+\Succ(a,b)&\defiff\forall x\,(x\extone b\leftrightarrow(x=a\lor x\extone a)),\\
+\Ind(z,t)&\defiff z\extone t\land
+ \forall a\,(a\extone t\to\exists b\,(b\extone t\land\Succ(a,b))),\\
+\Nat_z(a)&\defiff\forall t\,(\Ind(z,t)\to a\extone t).
+\end{align*}
+An object $a$ is \emph{uniform} if $\Unif(a)$ holds. Note that $\Nat_z$ is meaningful even in a structure with no inductive object. In that case, it holds for every object. In particular, the induction axiom below does not presuppose Infinity.
+
+\begin{definition}[Base theory $B$]\label{def:base}
+The axioms of $B$ are the universal closures of the following formulas and schemes. In comprehension and uniformity, $\varphi(x,\vec p)$ is any $L_1$-formula with free variables among $x,p_1,\ldots,p_k$, where $\vec p=(p_1,\ldots,p_k)$. In induction, $\psi(x,\vec q)$ is any $L$-formula, with arbitrary parameters. In all schemes, variables introduced by the scheme are renamed to avoid capture.
+\begin{enumerate}[label=\textnormal{(B\arabic*)}]
+\item First Extensionality: $\forall a,b\,[(\forall x\,(x\extone a\leftrightarrow x\extone b))\to a=b]$.
+\item Second Extensionality: $\forall a,b\,[(\forall x\,(x\exttwo a\leftrightarrow x\exttwo b))\to a=b]$.
+\item Comprehension:
+\[\exists a\,\forall x\,(x\exttwo a\leftrightarrow\varphi(x,\vec p)).\]
+\item Uniformity:
+\[
+\begin{aligned}
+\Bigl[\,&\bigwedge_{i=1}^{k}\Unif(p_i)
+   \land \forall x\,(x\exttwo a\leftrightarrow\varphi(x,\vec p))\\
+ &{}\land\neg\varphi(a,\vec p)\Bigr]
+ \;\Longrightarrow\;\Unif(a).
+\end{aligned}
+\]
+The last condition can equivalently be written $a\notin_2 a$ under the preceding extension equivalence. If $k=0$, the empty conjunction is understood to be true, so the uniform-parameter condition is vacuous.
+\item Relational natural-number induction:
+\[
+\begin{aligned}
+\Bigl[\,&\Zero(z)\land\psi(z,\vec q)\\
+ &{}\land\forall a,b\,\bigl((\Nat_z(a)\land\Succ(a,b)\land\psi(a,\vec q))
+    \to\psi(b,\vec q)\bigr)\Bigr]\\
+ &\Longrightarrow\quad \forall a\,(\Nat_z(a)\to\psi(a,\vec q)).
+\end{aligned}
+\]
+\end{enumerate}
+\end{definition}
+The variables $a,b,z,t,x$ used as local bound variables are chosen fresh where appropriate. In particular, the comprehension representative $a$ is not a free parameter of the defining formula. Extensionality for $\exttwo$ makes the comprehension representative unique. The conditional nature of (B4) is essential: it does not require arbitrary second extensions to agree with first extensions.
+
+\begin{definition}[Extensions of $B$]\label{def:extensions}
+First-membership uniform subsethood ($\US$) is the sentence
+\[\forall a,b\,[(\Unif(a)\land b\subone a)\to\Unif(b)].\]
+First-membership set induction ($\TI$) is the scheme
+\[
+\Bigl[\forall a\,\bigl((\forall x\,(x\extone a\to\psi(x,\vec q)))
+  \to\psi(a,\vec q)\bigr)\Bigr]
+ \;\Longrightarrow\;\forall a\,\psi(a,\vec q),
+\]
+with universal closure, for every $L$-formula $\psi$. No corresponding principle for $\exttwo$ is asserted.
+\end{definition}
+Throughout, $\Ztwo$ is the two-sorted theory with number operations $0,S,+,\cdot$, the Peano equations, set extensionality, induction for all two-sorted formulas with parameters, and comprehension for every two-sorted formula, with number and set parameters. We do not add the countable-choice scheme. This presentation is equivalent to the customary full-comprehension theory with the usual arithmetical definitions \cite{simpson}. Let $\Ztwo^{\mathrm{pf}}$ have the same basic axioms but comprehension only for formulas without free set parameters; number parameters and bound set quantifiers are permitted. The parameter-free theory in Friedman's result can be taken with no free parameters other than the distinguished number variable; our comprehension suffices for that version as well.
+
+\section{Uniform comprehension and derived Infinity}\label{sec:infinity}
+\begin{lemma}[Uniform collection]\label{lem:collection}
+Suppose $\varphi(x,\vec p)$ is an $L_1$-formula, each $p_i$ is uniform, and $\forall x(\varphi(x,\vec p)\to\Unif(x))$. There is a unique uniform object $a$ such that
+\[\forall x\,(x\extone a\leftrightarrow\varphi(x,\vec p)).\]
+Its second extension is also given by $\varphi$.
+\end{lemma}
+\begin{proof}
+By (B3) take $a$ with the specified second extension. If $\neg\Unif(a)$, (B4) implies $\varphi(a,\vec p)$, whence $\Unif(a)$ by the hypothesis on the values of $\varphi$, a contradiction. Thus $a$ is uniform. First Extensionality gives uniqueness.
+\end{proof}
+The lemma is a derived scheme and is not the Collection scheme of ordinary set theory. Its hypotheses constrain the parameters and the prospective members, not the syntactic complexity of the first-language formula. In particular it yields a uniform empty object $z$ (using $x\ne x$) and uniform singletons and unordered pairs of uniform objects. For uniform $a,b$, the Kuratowski pair $\langle a,b\rangle=\{\{a\},\{a,b\}\}$ exists uniformly. The usual ordered-pair identity follows from First Extensionality: the intersection of the singleton and unordered-pair components identifies the first coordinate, and the members of their union identify the second coordinate once the first is known. This is an extensional argument about membership; it does not use a general Union axiom. If $g$ and each of its members are uniform, a uniform $p$ may be adjoined to it by the defining formula $x\extone g\lor x=p$; the result again has uniform members.
+
+\begin{theorem}[Infinity without an Infinity axiom]\label{thm:omega}
+$B$ proves the existence of a unique pair of objects $z,w$ such that $\Zero(z)$, $\Ind(z,w)$, and
+\[\forall t\,(\Ind(z,t)\to w\subone t).\]
+Moreover, $\Unif(w)$, $\forall x(x\extone w\to\Unif(x))$, and $x\extone w\leftrightarrow\Nat_z(x)$.
+\end{theorem}
+\begin{proof}
+Let $P(a)$ assert that $a$ and all its first members are uniform. By Lemma~\ref{lem:collection}, $z$ exists and $P(z)$ holds. Whenever $P(a)$ holds, apply the lemma to $x=a\lor x\extone a$. It gives a uniform successor $b$ whose first members are uniform. Any other successor of $a$ equals $b$ by First Extensionality. Thus the induction step of (B5) holds for $P$, and $P(a)$ holds for every $a$ satisfying $\Nat_z(a)$.
+
+Apply Lemma~\ref{lem:collection} to the $L_1$-formula $\Nat_z(x)$ with uniform parameter $z$. This yields a uniform object $w$ with precisely these first members, each uniform. Every inductive object contains $z$, so $z\extone w$. If $a\extone w$, the preceding argument supplies its successor $b$. Every inductive object contains $a$ and has a successor of $a$ as a member. By functionality, that successor is $b$. Consequently $b\extone w$. Therefore $w$ is inductive, and its defining equivalence makes it a subset of every inductive object. Uniqueness of $z$ and $w$ follows by extensionality.
+\end{proof}
+We henceforth write $\omega=w$, $0=z$, and $N(a)$ for $a\extone\omega$. Induction on $N$ with arbitrary $L$-formulas and parameters follows immediately from (B5). The alternative axiom presentation with explicit existence of a least inductive object and induction on its members is deductively equivalent to $B$: Theorem~\ref{thm:omega} proves its axioms from $B$; in the other direction, leastness gives the equivalence of $N$ and $\Nat_z$, hence (B5). This equivalence holds also after adding $\TI$ or $\US$.
+
+\section{Arithmetic internal to DEST}\label{sec:arith}
+We now work in an arbitrary model of $B$. In particular, its natural-number domain need not be externally standard. The construction uses internal induction, not induction on the metatheoretic natural numbers.
+
+\begin{lemma}[Number properties]\label{lem:numbers}
+Every number is transitive, is not a first member of itself, and has only numbers as first members. Each number is zero or the successor of a number. The successor operation is total and injective on the numbers, and zero is not in its range. The first-membership relation is a strict linear order on the numbers.
+\end{lemma}
+\begin{proof}
+Totality and functionality follow from Theorem~\ref{thm:omega} and extensionality. Transitivity follows by induction: if $x\extone y\extone S(a)$, then $y=a$ or $y\extone a$, and transitivity of $a$ gives $x\extone a$ in either case. Irreflexivity holds at zero. If $b=S(a)$ and $b\extone b$, then $b=a$ or $b\extone a$. The first case contradicts the irreflexivity of $a$, since $a\extone b$; in the second, $a\extone b\extone a$ contradicts transitivity and irreflexivity of $a$. Induction likewise gives that all members of a number are numbers, that each nonzero number is a successor, and that zero belongs to every nonzero number. A successor contains its predecessor, so is nonempty. If distinct numbers $a,c$ have the same successor, then $a\extone c$ and $c\extone a$, contrary to transitivity and irreflexivity.
+
+For comparison, fix a number $a$. Induction on $b$ gives
+\[a\extone b\ \Longrightarrow\ S(a)=b\text{ or }S(a)\extone b.\]
+Indeed, the base case is vacuous. If $b=S(c)$, then $a=c$ or $a\extone c$; apply the induction hypothesis in the latter case. Now prove by induction on $a$ that every number $b$ equals $a$ or is comparable with it. The base case uses the fact that zero is a member of every nonzero number. At the successor step, if $b=a$ or $b\extone a$, then $b\extone S(a)$; if $a\extone b$, use the displayed implication. Irreflexivity and transitivity exclude simultaneous opposite comparisons. Transitivity of the strict order follows from transitivity of the numbers as sets.
+\end{proof}
+
+\begin{lemma}[Internal finite recursion]\label{lem:recursion}
+Let $H(a,b,c)$ be an $L_1$-formula such that for every pair of numbers $a,b$ there is a unique number $c$ satisfying $H(a,b,c)$. For any numbers $a,i,n$, there is a unique value at $n$ of the recursion with initial value $i$ and step $H(a,\cdot,\cdot)$. The value relation is $L_1$-definable and satisfies the zero and successor equations.
+\end{lemma}
+\begin{proof}
+A recursion graph through $n$ is an object $g$ whose first members are exactly ordered pairs giving a function with domain the first members of $S(n)$, numerical values, initial value $i$ at zero, and the step condition whenever $k,l$ lie in its domain and $\Succ(k,l)$. The pair predicate is expressible by the first-language formulas for singletons and unordered pairs. Functionality, totality, and the transition condition are first-language formulas. The graph definition does not require a uniform graph.
+
+We prove by internal induction on $n$ that such a graph exists and that it and its members are uniform. At zero, use the singleton of $\langle 0,i\rangle$. At the successor of $n$, let $c$ be the unique number satisfying $H(a,g(n),c)$, and adjoin $\langle S(n),c\rangle$. The new index $S(n)$ is not in the old domain, by irreflexivity, and the new domain is the old domain with that index adjoined. The only new transition has predecessor $n$, by successor injectivity. A transition from the new index to an old index would imply, by transitivity, that $S(n)$ belongs to the old domain. A transition from it to itself would contradict the irreflexivity of its successor. Lemma~\ref{lem:collection} supplies the enlarged graph with the required uniformity properties. The induction formula asserts existence of a graph, so the argument covers nonstandard indices as well.
+
+If two graphs through $n$ are given, induction on $k$ proves that their values agree whenever $k$ is in the common domain. The zero case is the initial condition; in the successor case, membership of $S(k)$ in the domain implies membership of $k$ there, by transitivity. Apply functionality of $H$. In particular the values at $n$ agree, even for nonuniform candidate graphs. Existence of an extended graph proves the recursion equation. The defining formula existentially quantifies over candidate graphs, with no reference to $\exttwo$.
+\end{proof}
+Apply Lemma~\ref{lem:recursion} first with initial value $a$ and step $c=S(b)$; denote its output by $a+n$. Then apply it with initial value zero and step $c=b+a$, and denote the output by $a\cdot n$. Thus
+\begin{align*}
+a+0&=a,& a+S(n)&=S(a+n),\\
+a\cdot 0&=0,& a\cdot S(n)&=a\cdot n+a.
+\end{align*}
+All definitions are in $L_1$. The objects $0$ and $\omega$ are uniquely definable without parameters and may be eliminated by their defining formulas. The usual functional language of arithmetic is therefore interpreted definitionally via the graphs of these operations.
+
+\begin{theorem}[Parameter-free second-order arithmetic]\label{thm:pf}
+Every model of $B$ yields a two-sorted model of $\Ztwo^{\mathrm{pf}}$. Its first sort is the first-member domain of $\omega$, with the arithmetic just defined.
+\end{theorem}
+\begin{proof}
+Use the following domain for the second sort:
+\[\mathcal R=\{X:\forall x\,(x\extone X\to N(x))\}.\]
+This is a domain predicate, not an assertion that the collection $\mathcal R$ is a set of DEST. Crucially, its definition does not require $\Unif(X)$. Membership of a number in a second-sort object is $\extone$; equality is object equality, and First Extensionality gives set extensionality. The basic number axioms hold by Lemmas~\ref{lem:numbers} and \ref{lem:recursion}.
+
+Relativize number quantifiers to $N$ and set quantifiers to the displayed domain predicate. For atomic arithmetic formulas, replace compound terms by their unique-value relations, and translate number-set membership by $\extone$. Boolean connectives are unchanged. Induction on terms and formulas gives truth preservation; every translated formula belongs to $L_1$, even when set quantifiers alternate with number quantifiers. Full induction in the two-sorted structure follows from (B5), since its parameters need not be uniform.
+
+For comprehension, let $\theta(n,\vec k)$ be any two-sorted formula without free set variables; its numerical parameters $\vec k$ are uniform. Bound set quantifiers are unrestricted. Its first-language translation $\theta^*(x,\vec k)$ yields the formula $N(x)\land\theta^*(x,\vec k)$, with only uniform parameters (including $\omega$ if used explicitly). All prospective members are uniform by Theorem~\ref{thm:omega}. Lemma~\ref{lem:collection} gives a first-extension representative $A$, which belongs to $\mathcal R$ and realizes the comprehension instance. This proves the assertion.
+\end{proof}
+\begin{corollary}[Arithmetic lower bound]\label{cor:lower}
+If $\Ztwo\vdash\sigma$ for a first-order arithmetic sentence $\sigma$, then $B\vdash\sigma^*$.
+\end{corollary}
+\begin{proof}
+We use Friedman's restriction theorem \cite[Lemma 3.1.7]{friedman}; see also \cite{gitman}. In the form required here, a countable model of parameter-free full second-order arithmetic admits a restriction of its set sort satisfying full second-order arithmetic, with its number structure unchanged. Our number-parameter comprehension includes the completely parameter-free instances required by that theorem. If $B\nvdash\sigma^*$, first-order completeness and downward L\"owenheim--Skolem give a countable model of $B+\neg\sigma^*$. Theorem~\ref{thm:pf} gives a countable parameter-free arithmetic model falsifying $\sigma$. Restrict its set sort using Friedman's theorem; the resulting full model still falsifies $\sigma$, a contradiction.
+\end{proof}
+
+\section{The powerset-free upper bound}\label{sec:upper}
+The construction in this section must be carried out within a weak set-theoretic metatheory, not merely in a stronger theory that proves the existence of a DEST model.
+
+\subsection{The interpreted metatheory and its resources}
+We use the interpretation of Kanovei and Lyubetsky \cite{kl}, in particular Theorems 5.2 and 1.2 of the expanded preprint (version 4). Full second-order arithmetic without countable choice interprets their tree-based set theory $\mathsf{TMC}$; in it the constructible cut $L^*$ satisfies powerset-free ZFC with Collection. The cut is $L$ if the first uncountable ordinal of $L$ does not exist and $L_{\omega_1^L}$ otherwise. The distinction matters: one cannot simply assume the whole constructible universe satisfies Collection in the intermediate theory. The finite ordinals in the tree interpretation are the codes of the original numbers, and the cut is transitive and retains them. Consequently, the interpretation preserves first-order arithmetic, with addition and multiplication defined by the usual finite recursions. These features, rather than bare equiconsistency of the intermediate theories, are used below.
+
+Write $\mathcal S$ for the interpreted structure. The internal proof requires the following resources.
+\begin{enumerate}[label=\textnormal{(R\arabic*)}]
+\item Extensionality, Empty Set, Adjunction, Union, Infinity with a least inductive set $\omega$, Foundation, and full Separation and Collection for definable formulas. The usual set operations including finite Cartesian products are available.
+\item A definable strict class order under which every nonempty definable class has a least element. The constructible order suffices: given a witness, its initial segment is bounded in a constructible level and Separation yields a set on which to take the least witness.
+\item Cofinal finite reflection: for any set $a$ and any externally fixed finite family of definable requests $\chi_i(x,\vec p)$, there is a transitive set $d$ containing $a$ as a member, closed under adjunction, such that whenever all components of $\vec p$ are members of $d$ and a witness exists in $\mathcal S$, some witness belongs to $d$.
+\item Internal countability: every nonempty set is the image of the internal $\omega$ under a surjection (equivalently, it admits an injection into $\omega$).
+\end{enumerate}
+These are the resources encoded in the Lean weak-model specification. For (R3), apply the cofinal reflection result of \cite[Corollary 8.4 and Lemma 8.5 in version 4]{kl} to the existential closures of the finitely many requests, expanding definable operations and relations, and choose a sufficiently large limit constructible level. Such a level is transitive and adjunction-closed. The order and Collection are supplied by Lemma 7.3 and Theorem 8.6 of the same reference. Internal countability of the cut is also explicit in \cite[Lemmas 15 and 17(1)]{kl2}. An enumeration is obtained from an injection by inverting it on its range and assigning a fixed member at other indices. No power set or set of all subsets is available or needed.
+
+Every reference to a formula in the construction below denotes an externally fixed formula, with parameters varying over sets of $\mathcal S$. The interpretation and reflection facts can be applied separately to each such finite list. No truth predicate for the ambient universe is assumed. All set notation and internal induction in this section are interpreted in $\mathcal S$, including in nonstandard models. In particular, an internally finite history need not be finite externally.
+
+\subsection{Internal finite histories without Power Set}\label{sec:histories}
+We record the set-existence argument used by the matching procedure. In powerset-free set theory with Collection, a definable functional relation on a set has a graph and a range: Collection gathers a set of witnesses, Separation removes extraneous witnesses, and the same argument applied to ordered-pair codes yields the graph. Finite products are obtained by collecting rows and taking unions. For an everywhere-defined functional update $h$ on states, define a history through $n$ to be a graph with domain $n+1$, a prescribed initial state, and consecutive values related by $h$. Start with a singleton history and extend it by one step by adjoining the next ordered pair. Internal induction gives existence at each internal $n$ and uniqueness by induction comparing two histories on their common domain. Collection gathers histories for all $n\in\omega$; Separation discards any extraneous objects that are not histories. The union of their compatible graphs gives a sequence. Equivalently, define the graph by the condition that an entry occurs in a history, then collect the ordered pairs and apply Separation. For a definable update specified by a finite case distinction, its graph is first-order definable. This is sufficient for all recursions below and requires no set of possible histories.
+
+\subsection{Reflecting domains and requested extensions}\label{sec:regions}
+Fix a finite list $Q$ of unary defining formulas $\varphi(x,\vec p)$ of $L_1$; their parameters may have any fixed finite arity. The intended fragment includes both extensionality axioms, the comprehension and uniformity instances from $Q$, and all the natural-number and set-induction instances. Fix also a first-language sentence $s$ whose truth is to be retained. When reading $L_1$ in $\mathcal S$, the first relation is its ordinary membership.
+
+For each formula in $Q$ and for $s$, include requests for witnesses to existential subformulas (or counterexamples to universal subformulas). For every $\varphi$ in $Q$, include the following requests, with the indicated parameters:
+\begin{align*}
+&\varphi(x,\vec p) &&\text{positive witness},\\
+&\forall y\,(y\in x\leftrightarrow\varphi(y,\vec p)) &&\text{representative},\\
+&\neg(x\in a\leftrightarrow\varphi(x,\vec p)) &&\text{disagreement},\\
+&\varphi(x,\vec p)\land x\notin u\land x\notin b &&\text{outside witness}.
+\end{align*}
+Include also the outside request for the always-true formula. The variables $a,u,b$ here are additional request parameters. The request for a representative concerns the entire $\mathcal S$-universe, not just the reflecting domain.
+
+Apply (R3) first with $a=\omega$, obtaining a transitive region $u$ containing $\omega$, then with $a=u$, obtaining a transitive adjunction-closed region $d$ containing $u$. Both regions are closed under the same finite list of requests. In particular, $u\subseteq d$, and $d$ contains all numbers of $\mathcal S$ and its $\omega$. We use $d$ as the carrier, with inherited membership as its first relation. Its first extensions are the actual ambient sets $a$ for $a\in d$, by transitivity. Extensionality of this restricted relation follows from ambient Extensionality.
+
+By induction on the syntax of the fixed formulas, closure under subformula requests gives
+\begin{equation}\label{eq:reflect}
+d\models\varphi(x,\vec p)
+\quad\Longleftrightarrow\quad
+\mathcal S\models\varphi(x,\vec p),
+\qquad x,p_1,\ldots,p_k\in d.
+\end{equation}
+The analogous equivalences hold for $s$ and for the formulas of $Q$ evaluated in $u$ with parameters in $u$. The atomic cases use the restriction of membership and equality; connectives preserve the equivalence. For quantifiers, an ambient existential witness or universal counterexample can be found in the reflecting region. This is finite-formula reflection, not an assertion of full elementarity.
+
+For a tuple $\vec p$ of elements of $d$, write
+\[E_{\varphi,\vec p}=\{x\in d:d\models\varphi(x,\vec p)\}.\]
+This set exists by Separation on $d$. Call a set $E$ \emph{protected} if it is such an extension for some $\varphi\in Q$ and parameters in $u$. We prescribe $F(a)=a$ for all $a\in u$. The remaining left and right domains are
+\begin{align*}
+ O&=d\setminus u,\\
+ J&=\left(\{\{a\}:a\in O\}\cup
+      \{E_{\varphi,\vec p}:\varphi\in Q,\ \vec p\in d^{k_\varphi}\}\right)\setminus u,
+\end{align*}
+where $k_\varphi$ is the parameter arity. All elements of $J$ are subsets of $d$. The right-hand family exists by finite products, Separation and Collection; alternatively, as in the Lean construction, take a larger reflecting region containing $d$ and closed under the requests for the extensions of all parameter tuples, and separate $J$ from that region. The singleton sets are obtained by adjunction in the larger region. This family contains only the requested extensions and the indicated singletons, rather than the entire ambient powerset of $d$.
+
+\begin{lemma}[Availability of fresh matches]\label{lem:fresh}
+In the notation above the following statements hold.
+\begin{enumerate}[label=(\alph*)]
+\item If $E\in J$ is protected, its defining class has no ambient representative, and $E\notin d$.
+\item Given any $b\in d$ and any protected $E\in J$, there exists $x\in E\cap O$ with $x\notin b$.
+\item For every $b\in d$ there exists $x\in O$ with $x\notin b$.
+\item For every $x\in O$, $\{x\}\in J$ and $\{x\}$ is not protected.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+(a) Take a protected definition $\varphi(x,\vec p)$ with parameters in $u$. If the ambient class has a representative $a$, the representative request in $u$ supplies one in $u$. By transitivity and \eqref{eq:reflect}, its extension equals $E$, contrary to $E\notin u$. If $E\in d$, an ambient disagreement between $E$ and the defining class would be witnessed in $d$, by the disagreement request with parameters $E,\vec p$. This contradicts the definition of $E$ and \eqref{eq:reflect}. Hence $E$ itself would be an ambient representative, which has just been ruled out.
+
+(b) If no ambient $\varphi$-witness lay outside $u\cup b$, Separation on that union would represent the whole defining class. Thus a witness exists outside both sets. Since $u,b,\vec p\in d$, the outside request in $d$ supplies such a witness in $d$. By \eqref{eq:reflect} it belongs to $E$, and by construction it is outside $u$ and $b$.
+
+(c) Apply the same argument to the formula that is always true: a set containing all sets would contain itself, contrary to Foundation. Thus there is an ambient witness outside $u\cup b$, and the true-formula outside request puts one in $d$.
+
+(d) Transitivity of $u$ implies $\{x\}\notin u$, so it belongs to $J$. If it were protected, \eqref{eq:reflect} would give an ambient positive witness for its defining formula. The positive request in $u$ would supply a witness in $u$. That witness belongs to the singleton by \eqref{eq:reflect}, and must equal $x$, a contradiction.
+\end{proof}
+
+\subsection{An internal back-and-forth}\label{sec:matching}
+For $a\in O$ and $E\in J$, call $(a,E)$ admissible when
+\begin{equation}\label{eq:allowed}
+a\ne E\quad\land\quad(E\text{ is protected}\;\to\;a\in E).
+\end{equation}
+By Lemma~\ref{lem:fresh}(c,d), both $O$ and $J$ are nonempty. They admit internal enumerations by (R4). We construct a bijection $f:O\to J$ whose graph consists of admissible matches. Each internally finite partial matching state includes a forbidden set $b\in d$ of used left points and singleton indices of any used singleton outputs from $O$. Start with the empty matching and the empty forbidden set. At each step, any additional forbidden points are in $d$, so adjunction closure keeps the forbidden set in $d$. For a used singleton output $\{x\}$, its index $x\in O$ is unique. Whether an output has this form is a definable test, and the set is updated accordingly.
+
+For the next left point $a$, do nothing if it is matched. Otherwise choose an unused singleton output $\{x\}$ with $x\in O$ outside the forbidden set. Also exclude the unique possible $x$ such that $a=\{x\}$, by adjoining that index to the forbidden set if it lies in $d$. Lemma~\ref{lem:fresh}(c,d) ensures the required singleton exists, is unprotected and belongs to $J$. The new pair is admissible.
+
+For the next right point $E$, do nothing if it is already matched. Otherwise, if $E$ is protected, choose $a\in E\cap O$ outside the forbidden set by Lemma~\ref{lem:fresh}(b); $a\ne E$ by (a). If $E$ is not protected, choose $a\in O$ outside the forbidden set, also excluding $E$ if $E\in d$. Lemma~\ref{lem:fresh}(c) gives such an $a$. In either case the new pair is admissible. The update preserves injectivity and enlarges the matching, and updates the forbidden set to include the newly used points or singleton indices, as appropriate.
+
+Choose witnesses by the definable least-witness operation, or the least eligible index of the relevant enumeration. Perform a left step and a right step at each natural-number stage. The update is definable because $Q$ is a fixed finite list and the tests of membership, equality, protection and availability are first-order formulas. Section~\ref{sec:histories} supplies internal histories, and induction verifies their finite matching invariants and monotonicity. The union of the compatible graphs is an internal function: any two recorded pairs occur together at a common later stage and hence obey functionality and injectivity. Each point in either enumeration is handled at its corresponding stage. Thus the union is the desired bijection, with a graph that is a set in $\mathcal S$. This argument uses internal induction, including at nonstandard indices; it does not rely on an external enumeration of the domain.
+
+Extend $f$ by the prescribed assignments $F(a)=a$ on $u$. The resulting $F$ is injective because its two pieces have disjoint domains and disjoint ranges. It is a bijection from $d$ onto $u\cup J$, all of whose elements are subsets of $d$. Define
+\begin{equation}\label{eq:relations}
+\begin{aligned}
+x\extone a&\iff x\in a,\\
+x\exttwo a&\iff x\in F(a),
+\end{aligned}
+\qquad x,a\in d.
+\end{equation}
+In particular, the graph of $\exttwo$ is a set by Separation on $d\times d$; the implementation uses separation in a larger region containing the required pairs. Since both $a$ and $F(a)$ are subsets of $d$, Extensionality implies
+\begin{equation}\label{eq:fixed}
+\Unif(a)\quad\Longleftrightarrow\quad a=F(a)\quad\Longleftrightarrow\quad a\in u.
+\end{equation}
+The last equivalence follows from the fixed-point exclusion of \eqref{eq:allowed}. The construction is not an assignment of arbitrary subsets to objects, but a constrained bijection between internally collected families.
+
+\subsection{Axioms and preservation of arithmetic}\label{sec:verifyfrag}
+\begin{theorem}[Internal fragment model]\label{thm:fragment}
+For every fixed finite family $Q$ of first-language defining formulas and every first-language sentence $s$, the resources (R1)--(R4) suffice to construct a set-coded structure $\mathcal D=(d,\extone,\exttwo)$ satisfying both extensionality axioms, comprehension and uniformity for $Q$, and every externally fixed instance of relational natural-number induction and first-membership set induction. Moreover, $\mathcal D\models s$ if and only if $\mathcal S\models s$.
+\end{theorem}
+\begin{proof}
+First Extensionality follows from transitivity of $d$; Second Extensionality from injectivity of $F$. Every requested extension is in $u$ or $J$, hence has a representative under $F$. This proves comprehension. Suppose the parameters of a requested instance of uniformity are uniform, and its extension is $E=F(a)$. By \eqref{eq:fixed}, the parameters lie in $u$, so $E$ is protected. If $a\notin u$, admissibility implies $a\in E$, i.e. $a\exttwo a$. Therefore the non-self-membership premise forces $a\in u$, which is precisely uniformity.
+
+The empty object, all the internal numbers of $\mathcal S$, and its least inductive set $\omega$ belong to $d$. The successors of these numbers are present in $d$; the restricted successor relation agrees with the ambient one, because of transitivity and extensionality. The inherited $\omega$ is inductive. For any object $t$ that is inductive in $d$, internal induction in $\mathcal S$ proves that it contains every number: the base follows from inductiveness, and any successor witness in $d$ must be the actual successor. Hence $\omega$ is the least inductive object of $\mathcal D$. The domain defined by $\Nat_z$ in (B5) therefore agrees exactly with the internal numbers of $\mathcal S$. For any fixed induction formula, relativize its quantifiers to $d$ and replace second membership by the definable relation \eqref{eq:relations}. This is a formula in $\mathcal S$, so its natural-number induction applies and verifies (B5). For $\TI$, separate the set of counterexamples inside $d$. If it is nonempty, it has a membership-minimal element by ambient Foundation. This contradicts progressiveness, since the inherited relation is ambient membership restricted to $d$. These arguments allow arbitrary parameters and both membership symbols. Finally, $s$ is first-language, so \eqref{eq:reflect} gives its preservation independently of $F$.
+\end{proof}
+\begin{remark}[Why this is a weak-metatheory construction]
+Only extensions of fixed formulas over specified sets are collected. The fresh-witness argument uses nonrepresentability and Separation, not a cardinality estimate for an ambient proper class. The matching uses set-coded enumerations and internally finite histories, not external choice or a set of all partial maps. The graph of second membership and the induction counterexamples are sets of the weak model. These facts are necessary to apply internal Foundation and induction. Merely showing that a matching exists externally would not suffice.
+\end{remark}
+
+\section{Exact arithmetic strength}\label{sec:exact}
+\begin{theorem}[Upper bound and arithmetic preservation]\label{thm:upper}
+For any first-order arithmetic sentence $\sigma$, if $T\vdash\sigma^*$ then $\Ztwo\vdash\sigma$. Also, any Henkin model of $\Ztwo$ yields, externally, a model of $T$.
+\end{theorem}
+\begin{proof}
+Fix a finite derivation of $\sigma^*$ in $T$. There are finitely many comprehension and uniformity formulas in it; let $Q$ contain them. Choose $s=\sigma^*$ in Theorem~\ref{thm:fragment}. Given any model of $\Ztwo$, apply the published tree interpretation and pass to the constructible cut to obtain a weak set model with (R1)--(R4). The theorem gives an internal model of the finite axiom support of the derivation, retaining the truth of $s$. Ordinary soundness applied to that finite derivation yields $\mathcal D\models\sigma^*$, so $\mathcal S\models\sigma^*$. In $\mathcal S$ the translation of arithmetic is the ordinary von Neumann arithmetic: zero, successor and least inductive object are the standard internal definitions, and the recursion graphs define the ordinary addition and multiplication by their unique recursion values. Preservation of the number domain under the published interpretation therefore implies that the original arithmetic model satisfies $\sigma$. Since the model of $\Ztwo$ was arbitrary, first-order completeness gives $\Ztwo\vdash\sigma$.
+
+For the second assertion, start with any model of $\Ztwo$ and its interpreted weak set model. Every externally specified finite subset of $T$ has a model by Theorem~\ref{thm:fragment}, taking $s$ to be a logical truth. Classical first-order compactness (see \cite{enderton}), used externally, supplies one model of $T$. This step does not assert that the interpreted weak theory proves a single internal truth predicate for all fragments, nor that $\Ztwo$ proves $\Con(T)$.
+\end{proof}
+
+\Needspace{6\baselineskip}
+\begin{corollary}[Equiconsistency and equal arithmetic consequences]\label{cor:exact}
+For every first-order arithmetic sentence $\sigma$,
+\[\Ztwo\vdash\sigma\quad\Longleftrightarrow\quad B\vdash\sigma^*
+\quad\Longleftrightarrow\quad T\vdash\sigma^* .\]
+In particular, $\Con(\Ztwo)\leftrightarrow\Con(B)\leftrightarrow\Con(T)$.
+\end{corollary}
+\begin{proof}
+Combine Corollary~\ref{cor:lower}, the inclusion $B\subseteq T$, and Theorem~\ref{thm:upper}. For the consistency equivalences one may either use an arithmetic contradiction in the comparison, or combine the model transformations, Friedman's restriction and first-order completeness. No form of uniform subsethood is used in this argument.
+\end{proof}
+The consistency statements are external metamathematical comparisons of recursively specified first-order theories. They assert neither validity under full second-order semantics nor that one of the theories proves its own consistency. The number-preserving versions of the published reductions are necessary for the stronger arithmetic assertion; plain equiconsistency would suffice only for the weaker conclusion.
+
+\section{Uniform subsethood and a ZF relative-consistency bound}\label{sec:rank}
+The additional principle $\US$ requires every object whose first extension is contained in a uniform object's first extension to be uniform. The preceding powerset-free construction does not automatically enforce this condition: its uniform region must be changed to one with an appropriate subset-closure property. We give a separate finite-fragment argument over ZFC, then pass to ZF through constructibility.
+
+\begin{theorem}\label{thm:rank}
+If ZF is consistent, then $B+\US+\TI$ is consistent.
+\end{theorem}
+\begin{proof}
+Work first in ZFC, and fix an externally specified finite fragment of the displayed theory. Let $Q$ contain the finitely many first-language formulas in its uniformity instances. For each $\varphi(x,\vec p)\in Q$, include in a finite reflection family $\varphi$, the positive-witness formula $\exists x\,\varphi(x,\vec p)$, the representative formula
+\[R_\varphi(a,\vec p)\defiff \forall x\,(x\in a\leftrightarrow\varphi(x,\vec p)),\]
+and $\exists a\,R_\varphi(a,\vec p)$, together with the required subformulas. By finite L\'evy--Montague reflection (see \cite{jech}), choose limit ordinals $\omega<\alpha<\beta$ such that $V_\alpha$ and $V_\beta$ agree on these formulas for parameters in $V_\alpha$. Both levels are transitive. Choose a countable elementary substructure $M$ of $(V_\beta,\in,V_\alpha)$, where the last entry is a unary predicate, containing $\omega$ and every finite ordinal. Put $U=M\cap V_\alpha$.
+
+For $a\in M$ let $E(a)=\{x\in M:x\in a\}$. By elementarity and ambient Extensionality, the map $a\mapsto E(a)$ is injective. Let $D$ be the family of all subsets of $M$ definable in the first language with parameters from $M$. It is countable, since the language and $M$ are countable. It contains $E(a)$ for all $a\in M$ and all singletons of members of $M$. Prescribe $F(a)=E(a)$ for $a\in U$. Call $C\in D$ protected if some formula in $Q$ defines $C$ over $M$ with parameters from $U$.
+
+We verify the matching conditions, now in terms of traces. Suppose $C$ is protected, defined by $\varphi(x,\vec p)$ with $\vec p\in U$. Write $C^*=\{x\in V_\beta:V_\beta\models\varphi(x,\vec p)\}$. If $C^*$ has a representative in $V_\beta$, reflection supplies a representative in $V_\alpha$ and elementarity in the expanded language supplies one in $U$. Its trace is $C$. Conversely, if $C=E(a)$ for $a\in M$, elementarity makes $a$ a representative of $C^*$ in $V_\beta$; the preceding argument and trace injectivity imply $a\in U$. Thus, a protected extension not already fixed has no representative in $V_\beta$.
+
+In this last case $C^*$ is unbounded in rank below $\beta$: any subset of $V_\beta$ of bounded rank is an element of $V_\beta$, since $\beta$ is limit. Hence $C^*$ has arbitrarily many points outside $V_\alpha$. By elementarity with the extra predicate, $C$ contains arbitrarily many points of $M\setminus U$, avoiding any prescribed finite list of elements of $M$. There are also arbitrarily many points of $M\setminus U$ without any condition on membership in $C$, by the same elementarity argument applied to the ranks between $\alpha$ and $\beta$.
+
+For $b\in M\setminus U$, the singleton $\{b\}$ is not a fixed trace: a representative from $U$ would, by elementarity, have $b$ as an actual member, contradicting transitivity of $V_\alpha$. Nor is it protected. If it were defined by a formula from $Q$ with parameters in $U$, positive-witness reflection to $V_\alpha$, followed by elementarity in the expanded language, would produce a member of $U$ in that singleton.
+
+Complete the prescribed assignments by the countable back-and-forth used in Section~\ref{sec:matching}, with left domain $M\setminus U$, right domain $D\setminus\{E(a):a\in U\}$, and admissibility condition
+\[E(a)\ne C\quad\land\quad(C\text{ is protected}\;\to\;a\in C).\]
+For an unmatched left point, use a fresh unprotected singleton, avoiding its first trace. For an unmatched right point, use a fresh member outside $U$ of the extension if it is protected (its trace cannot equal that extension), and otherwise any fresh outside point avoiding the at most one point with that trace. The properties just proved ensure all choices. This produces a bijection $F:M\to D$ such that $F(a)=E(a)$ exactly on $U$.
+
+Let $x\extone a$ mean $x\in a$ in the inherited structure and $x\exttwo a$ mean $x\in F(a)$. Both Extensionalities hold, and surjectivity realizes comprehension. Uniform objects are precisely $U$, and the protected-extension condition gives all requested uniformity instances, as in Theorem~\ref{thm:fragment}.
+
+To verify $\US$, suppose $a\in U$ and the first trace of $b$ is included in that of $a$. Elementarity implies $V_\beta\models b\subseteq a$, hence $b\subseteq a$ in the ambient universe by transitivity. Since $a\in V_\alpha$, rank monotonicity for subsethood gives $b\in V_\alpha$, so $b\in U$. This is precisely $\US$. The first relation is well-founded in the ambient metatheory, so every instance of $\TI$ holds, even for formulas involving the second relation. The included finite ordinals and $\omega$ give the least inductive object and natural-number induction as before (here the internal naturals are the actual naturals of the ambient construction).
+
+Thus, each specified finite fragment has a model in ZFC. For ZF, perform this fixed-fragment argument in the constructible universe $L$, which satisfies ZFC. The resulting set structure satisfies the specified fragment also in the surrounding universe, by absoluteness of satisfaction for fixed first-order formulas in set structures. Equivalently, any model of ZF admits the corresponding interpreted construction in its $L$. If ZF is consistent, first-order completeness and external compactness therefore give the asserted consistency. No single truth predicate for all fragments, inaccessible cardinal, or internal proof of $\Con(\ZF)$ is used.
+\end{proof}
+
+The corresponding Lean theorem constructs a model of $B+\US+\TI$ in its ambient set-theoretic development, using a rank cut of \code{ZFSet} closed under witness queries. The finite-reflection proof above is the external reduction to ZF. In particular, the theorem does not constitute an encoded interpretation of the entire extended DEST theory in ZF.
+
+\section{A hereditarily uniform Zermelo domain}\label{sec:zermelo}
+We now work in an arbitrary model of $B^+ = B+\US$, without assuming $\TI$. All membership and subsethood notation in this section refers to $\extone$. For clarity the subscript is retained in the principal formulas. A set is transitive if every first member of a first member is also a first member of the set. A set $a$ is well-founded on its members if every nonempty object $b\subone a$ has a member with no first member in $b$.
+
+\begin{definition}\label{def:hered}
+An object $a$ is hereditarily uniform if $\Unif(a)$ and there is a transitive $t$ with $a\subone t$ and $\forall x(x\extone t\to\Unif(x))$.
+\end{definition}
+This witness formulation is equivalent to the existence of a least transitive superset of $a$ with uniform members, together with $\Unif(a)$. Indeed, given a witness $t$, form the intersection of all transitive supersets of $a$, using the first-language formula for membership in that intersection with uniform parameter $a$. Its values are members of $t$ and hence uniform, so Lemma~\ref{lem:collection} applies. The resulting intersection is transitive, contains $a$ as a subset, and is the least such superset. A transitive uniform object with uniform members is itself such a witness.
+
+\begin{lemma}[Uniform powersets]\label{lem:powerset}
+For every uniform $a$, there is a unique uniform $b=\Pow(a)$ with uniform members such that
+\[x\extone b\quad\Longleftrightarrow\quad x\subone a.\]
+If $a$ is transitive and well-founded on its members, then so is $b$.
+\end{lemma}
+\begin{proof}
+By $\US$, all prospective members of the first-language subset formula with parameter $a$ are uniform. Lemma~\ref{lem:collection} gives the asserted $b$. For transitivity, if $y\extone x\extone b$, then $y\extone a$, and since $a$ is transitive, $y\subone a$, so $y\extone b$. Also, $a\subone b$ by transitivity of $a$.
+
+For well-foundedness let $d\subone b$ be nonempty. It is uniform by $\US$. Every member of $a$ is a subset of $a$ by transitivity, hence is uniform by $\US$. If $d$ has a member in $a$, the nonempty intersection $e=d\cap a$ exists by Lemma~\ref{lem:collection}, since its parameters and prospective members are uniform. Choose a minimal member $x$ of $e$ using well-foundedness of $a$. Any first member of $x$ belonging to $d$ belongs to $a$ by transitivity, and so belongs to $e$, a contradiction. If $d$ has no member in $a$, every member $x$ of $d$ is minimal in $d$: all its first members lie in $a$, since $x\extone b$. This proves the result.
+\end{proof}
+
+\begin{lemma}\label{lem:omega-good}
+The object $\omega$ is uniform, transitive, has uniform members, and is well-founded on its members.
+\end{lemma}
+\begin{proof}
+Uniformity is Theorem~\ref{thm:omega}; transitivity is Lemma~\ref{lem:numbers}. Let $d\subone\omega$ be a nonempty object without a minimal member. Induct on numbers $n$ in the assertion that $n\notin_1 d$ and no member of $n$ belongs to $d$. The base follows from emptiness of zero and the assumption that $d$ has no minimal member. If the assertion holds at $n$, no member of $S(n)$ belongs to $d$. Were $S(n)$ itself in $d$, it would be minimal. Thus the assertion holds at the successor. It follows that $d$ has no member, a contradiction. This uses (B5), with parameter $d$, not ambient set induction.
+\end{proof}
+
+\subsection{Internal powerset stages}
+For every internal number $n$, we define a stage $A_n$ by an internal recursion satisfying
+\begin{equation}\label{eq:stages}
+ A_0=\omega,\qquad A_{S(n)}=\Pow(A_n).
+\end{equation}
+We must establish a single first-language stage relation, not just construct an external sequence for the standard numbers. Let $\operatorname{Stage}(n,a)$ assert that there exists a first-membership graph with natural-number indices through $n$, initial value $\omega$, and transitions given by the first-language power relation
+\[\operatorname{Power}(v,w)\defiff \forall y\,(y\extone w\leftrightarrow y\subone v),\]
+whose value at $n$ is $a$. The graph is coded by the uniform ordered-pair convention where pairs exist; its definition itself makes no uniformity demand. Explicitly one can use graphs with domain the first extension of $S(n)$, require a unique value at each index, and assert the initial and transition equations. Equivalently one can allow downward-closed graphs, requiring each recorded nonzero index to have its predecessor recorded, as in the formalization. Internal induction on the index gives the same stage values in both descriptions.
+
+Induct on $n$ in the assertion that such a graph exists, is uniform with uniform members, and records uniform stage values having uniform members. At zero, take the singleton pair $\langle 0,\omega\rangle$. If a graph exists through $n$, Lemma~\ref{lem:powerset} supplies the uniform powerset of its last value. Adjoin its ordered pair at $S(n)$ by Lemma~\ref{lem:collection}, exactly as in Lemma~\ref{lem:recursion}. The index is new and no earlier transition changes. This proves existence for all internal indices. The uniqueness of stage values for any candidate graph follows by induction: the zero value is prescribed, and powers are unique by First Extensionality. No Replacement is used. Every graph-based condition here is a first-language formula, except for the uniformity assertions in the induction proof, which are permitted full-language formulas.
+
+By Lemmas~\ref{lem:powerset} and \ref{lem:omega-good}, induction also shows that each stage is transitive and well-founded on its members, and is uniform with uniform members. Since a transitive object is contained in its own powerset, the stages are nested. More explicitly, induction on $n$ proves $A_k\subone A_n$ whenever $k\extone n$ or $k=n$: at a successor use the corresponding property at its predecessor and $A_n\subone A_{S(n)}$. Comparability of number indices from Lemma~\ref{lem:numbers} consequently places any two stage members into a common stage. The equality, existence and nesting statements concern all internal numbers, including nonstandard ones.
+
+\begin{theorem}[Zermelo domain]\label{thm:zermelo}
+In every model of $B+\US$ there is a uniform transitive object $W$ with uniform members such that its first-member structure satisfies Extensionality, Empty Set, Pairing, Union, Power Set, Infinity, Foundation, and every instance of full first-order Separation. In particular $W$ is hereditarily uniform.
+\end{theorem}
+\begin{proof}
+The formula
+\[\exists n,a\,(n\extone\omega\land\operatorname{Stage}(n,a)\land x\extone a)\]
+belongs to $L_1$ and its only needed parameters, zero and $\omega$, are uniform. Its prospective members are uniform by the stage argument. Hence Lemma~\ref{lem:collection} produces a uniform object $W$ with exactly these members. In notation justified by the defining formula, its extension is
+\[W=\bigcup_{n\in\omega} A_n.\]
+This equation is an abbreviation for the first-extension formula, not an application of ambient Replacement or Union to a set of stages. Transitivity of each stage gives transitivity of $W$. Each stage $A_n$ is itself a member of $W$, since $A_n\extone A_{S(n)}$ by the power definition and $A_n\subone A_n$. Thus $\omega\extone W$ and $0\extone W$. Moreover, if $a\extone W$ and $b\subone a$, choose $n$ with $a\extone A_n$; transitivity gives $b\subone A_n$, so $b\extone A_{S(n)}$ and hence $b\extone W$.
+
+The structure whose domain is the first extension of $W$, with restricted first membership, satisfies Extensionality by transitivity and ambient First Extensionality, Empty Set by $0\extone W$, and Infinity by $\omega\extone W$. For Pairing, any two members of $W$ are uniform and belong to a common stage $A_n$. Their uniform unordered pair exists and is a subset of $A_n$, hence lies in $W$. For Union, if $a\extone A_n$, every prospective member of its union lies in $A_n$ by transitivity and is uniform. The defining formula $\exists y\,(y\extone a\land x\extone y)$ yields a uniform union by Lemma~\ref{lem:collection}; its extension is contained in $A_n$, so it belongs to $W$. For Power Set, if $a\extone A_n$, the uniform $b=\Pow(a)$ exists. Each $c\extone b$ is a subset of $a$, hence a subset of $A_n$, so $c\extone A_{S(n)}$. Consequently $b\extone A_{S(S(n))}$ and lies in $W$. Transitivity ensures that subsethood computed inside $W$ is actual first-subsethood for its members, and the closure property just proved ensures all such subsets are present in $W$. Foundation follows by choosing a stage containing a given nonempty $a\extone W$: then $a$ is a subset of that well-founded stage, so it has a minimal member, also in $W$.
+
+Finally, let $\theta(x,\vec p)$ be any first-order formula of the ordinary set-theoretic language, and suppose $a$ and all components of $\vec p$ are first members of $W$. Relativize every quantifier of $\theta$ to the first members of $W$, translating membership by $\extone$, to obtain an $L_1$-formula $\theta^W(x,\vec p)$. All parameters, including $a,W,\vec p$, are uniform. The formula $x\extone a\land\theta^W(x,\vec p)$ defines only uniform objects. Lemma~\ref{lem:collection} produces its first-extension representative $b$. Since $b\subone a$, it belongs to $W$. Induction on the syntax of the externally specified formula proves that $\theta^W$ expresses precisely its truth in the domain. This gives full Separation, with no boundedness restriction. All requested axioms have been verified. The witness $t=W$ in Definition~\ref{def:hered} proves hereditary uniformity.
+\end{proof}
+
+\begin{remark}
+The result asserts that each model of $B^+$ contains a single object whose first-member structure satisfies all ordinary Zermelo axioms and every instance of its axiom schemes. It does not identify an internal arithmetized satisfaction predicate for all internally coded formulas. Establishing such a predicate and deriving an arithmetized consistency statement inside $B^+$ using it is a distinct formalization problem. No ambient Foundation or $\TI$ is used to obtain the domain, and the result makes no claim of an exact consistency strength for $B^+$.
+\end{remark}
+
+\section{Formalization and verification boundary}\label{sec:lean}
+The accompanying Lean 4 source archive formalizes the constructions described above. The source snapshot and the latest verification evidence supplied with the manuscript agree on all entries of the source checksum manifest. The recorded Git commit is
+\begin{center}\small\texttt{4a170802b75462a01925b065e89c1ed5383af122}.\end{center}
+The recorded toolchain is Lean 4.36.0 with mathlib at revision \code{fc4f59e577feb1a4956671bc04ac18aaaf8cd842}. Lean and mathlib provide the ambient formal language and the model-theoretic infrastructure; the object language of DEST is independently encoded by scoped first-order syntax, and its axiom schemes range over that syntax rather than arbitrary predicates of Lean. This distinction is essential for a semantic audit of comprehension and induction.
+
+\subsection{Theorem correspondence}
+Table~\ref{tab:formal} records the main checked endpoints. We distinguish model-existence theorems in the ambient type theory from external reductions of consistency strength. In particular, the formal theorem for the Zermelo domain quantifies over every first-language Separation formula, and the weak-model construction uses internally coded matching histories rather than merely an external countable enumeration.
+
+\begin{table}[!htbp]
+\centering\small
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.13}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{.25\textwidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Mathematical result & Lean declaration and scope\\
+\midrule
+Original closed theory and derived Infinity &
+\codename{DESTOriginalClosed.Satisfies}\newline
+\codename{DESTOriginal.exists_uniform_omega}\newline
+The original specification contains no Infinity axiom.\\[3pt]
+Arithmetic interpretation &
+\codename{DESTOriginal.original_interprets_standard_arithmetic}\newline
+\codename{DESTExact.parameter_free_from_original}\newline
+Functional arithmetic with parameter-free comprehension.\\[3pt]
+Internal finite fragments &
+\codename{DESTSet.finite_fragment_inside}\newline
+Carrier and second-membership graph inside models of the stated weak resources.\\[3pt]
+First-language transfer &
+\codename{DESTSet.first_sentence_of_internal_model}\newline
+Finite support and soundness for the declared reference calculus.\\[3pt]
+Compactness assembly &
+\codename{DESTSet.reference_model_from_set_model}\newline
+Full reference model retaining a first-language sentence.\\[3pt]
+Exact strength &
+\codename{DESTExact.z2_equiconsistency}\newline
+Conditional model-existence equivalence.\\[3pt]
+Uniform subsethood &
+\codename{DESTRank.exists_SU_TI_model}\newline
+Ambient semantic existence, not an encoded ZF proof transformation.\\[3pt]
+Zermelo domain &
+\codename{DESTOriginal.exists_hereditarily_uniform_Z_model}\newline
+One hereditarily uniform transitive domain with full semantic Separation.\\
+\bottomrule
+\end{tabularx}
+\caption{Principal formal declarations and their mathematical scope.}\label{tab:formal}
+\end{table}
+
+The file \codename{DEST/OriginalClosedSpecification.lean} independently specifies the original axioms. The equivalences to the earlier reference theory, including the derived Infinity axiom, are in \codename{DEST/OriginalClosed.lean} and \codename{DEST/OriginalStrength.lean}. The weak-model development is in \codename{DEST/SetLanguage.lean} through \codename{DEST/SetFragment.lean}, with the compactness assembly in \codename{DEST/SetCompactness.lean}. In that development, the set operations, Separation and Collection are fields of a weak-model structure. Definability in its first-order language is tracked explicitly. The reflection hypothesis supplies transitive adjunction-closed regions; internal countability supplies enumeration graphs. These two resource conditions are hypotheses of the internal fragment theorem. The theorem then constructs the carrier and the second membership graph as sets of that model. It is stronger than a construction solely in mathlib's ambient \code{ZFSet}.
+
+\FloatBarrier
+\Needspace{12\baselineskip}
+\subsection{Exact meaning of the conditional theorem}
+The module \codename{DEST/ExactStrengthSpecification.lean} defines \code{Z2Satisfiable}, \code{OriginalSatisfiable}, and \code{InductiveSatisfiable} as existence of the corresponding first-order models in the ambient type theory. Its two external propositions are:
+\begin{description}[style=nextline,leftmargin=1em]
+\item[\code{FriedmanRestriction}] Existence of a parameter-free arithmetic model implies existence of a full Henkin arithmetic model.
+\item[\code{ConstructibleInterpretation}] Existence of a full Henkin arithmetic model implies existence of a weak set model satisfying the stated \code{CofinalReflection} and \code{InternallyCountable} resources, in addition to the fields of the weak-model structure.
+\end{description}
+Writing $\mathrm{FR}$ and $\mathrm{CI}$ for these two propositions, respectively, the checked statement in \codename{DEST/ExactStrength.lean} is equivalent to
+\[
+\begin{gathered}
+\mathrm{FR}\land\mathrm{CI}\quad\Longrightarrow\\[-1pt]
+\Bigl[\bigl(\operatorname{Sat}(\Ztwo)\leftrightarrow\operatorname{Sat}(B)\bigr)
+\;\land\;
+\bigl(\operatorname{Sat}(\Ztwo)\leftrightarrow\operatorname{Sat}(T)\bigr)\Bigr].
+\end{gathered}
+\]
+The external propositions are explicit arguments of the theorem, not new foundational axioms admitted by the checker. The mathematical argument for discharging those premises uses the published results cited in Sections~\ref{sec:arith} and \ref{sec:upper}. The separate formal theorem \code{DESTExact.consistency_from_z2_model} yields syntactic consistency of the two declared DEST calculi from a Henkin model of $\Ztwo$ and the constructible-interpretation premise. Ordinary first-order completeness externally relates the model-existence equivalence to the usual equiconsistency statement. The stronger number-preserving comparison in Corollary~\ref{cor:exact} is the mathematical argument in this paper; it is not itself the exact type of \code{DESTExact.z2_equiconsistency}.
+
+\subsection{Recorded verification evidence}
+The latest evidence archive records 52 Comparator declaration targets. It reports successful ordinary Lean checking with \code{--trust=0}, semantic checks S1--S7, focused checks F1--F3, and the formal-strength audit including the conditional result. The five supplementary verification stages reported in the archive are listed in Table~\ref{tab:checks}. The Comparator sandbox was enabled in that run. The recorded axiom audit reports only the foundational dependencies \code{propext}, \code{Classical.choice}, and \code{Quot.sound}; the explicit hypotheses of the exact-strength theorem remain unchanged.
+
+\begin{table}[!htbp]
+\centering\small
+\begin{tabularx}{\textwidth}{@{}Xl@{}}
+\toprule
+Verification stage & Recorded verdict\\
+\midrule
+Ordinary Lean kernel and axiom audit & PASS\\
+Semantic audit, S1--S7 & PASS (7/7)\\
+Focused formal audit, F1--F3 & PASS (3/3)\\
+Comparator + mathlib (statement match and axiom whitelist) & PASS\\
+leanchecker-paranoid & PASS\\
+con-leche (verified mode) & PASS\\
+con-ron (verified mode) & PASS\\
+NanoDa + lean4lean & PASS\\
+Exact Henkin model-existence equivalence & CONDITIONAL PASS\\
+\bottomrule
+\end{tabularx}
+\caption{Recorded verification results in the supplied evidence archive. These are not a new independent execution of the checkers.}\label{tab:checks}
+\end{table}
+\FloatBarrier
+
+For reproduction, the source archive contains \code{lean-toolchain}, \code{lake-manifest.json}, \code{comparator.json}, \code{Challenge.lean}, \code{Solution.lean}, the specification and baseline checksum manifests, and the verification scripts. The evidence archive includes the run logs, source and tool-binary manifests, theorem targets, and exported NDJSON proof objects. The checksums of the recorded proof exports and source files were checked during manuscript preparation. A fresh execution of the verification workflow was not performed as part of manuscript preparation. The source and verification archives together provide the material needed to reproduce the checks and inspect the specifications, external premises, and trusted infrastructure. See \cite{lean,mathlib} for the underlying formalization systems.
+
+\Needspace{8\baselineskip}
+\section{Conclusions}
+The asymmetry between the two membership relations permits unrestricted first-language comprehension for second extensions while enforcing coincidence on a controlled uniform domain. The relational induction scheme suffices to derive a uniform least inductive set. Uniform collection then realizes the full parameter-free arithmetic comprehension scheme without requiring the second sort itself to consist of uniform objects. The finite-fragment matching construction shows that even full first-membership set induction can be realized in a powerset-free constructible metatheory of the arithmetic strength of $\Ztwo$. Together, these two directions establish the exact comparison in Theorem~\ref{thm:main}(ii).
+
+Uniform subsethood imposes an additional closure condition on the uniform domain. A rank cut provides the ZF relative-consistency bound, and the additional powerset operation yields a hereditarily uniform Zermelo domain by internal finite recursion. The exact consistency strength of DEST with uniform subsethood remains undetermined. Although the construction gives a single domain satisfying all the axioms of Zermelo set theory, deriving an internal arithmetized consistency statement for that theory remains a separate question.
+
+\section*{Code and verification evidence availability}
+The Lean source code is available in the public GitHub repository at:\par
+\noindent{\small\urlstyle{same}\url{https://github.com/zaljohar/Double-Extension/tree/chatgptwork-consistency}}\par
+The exact source snapshot is identified by the \href{https://github.com/zaljohar/Double-Extension/tree/4a170802b75462a01925b065e89c1ed5383af122}{Git commit recorded in Section~\ref{sec:lean}}. The corresponding verification workflow and its logs are available at:\par
+\noindent{\small\urlstyle{same}\url{https://github.com/zaljohar/Double-Extension/actions/runs/46033427790}}\par
+The evidence archive can be downloaded from the Artifacts section of the workflow summary, subject to GitHub's authentication and artifact-retention policies.
+
+\Needspace{13\baselineskip}
+\section*{Declaration of generative AI use and contribution}
+The author formulated Double Extension Set Theory and directed the research objectives and revisions. ChatGPT (OpenAI), a generative AI system, was used extensively as a research assistant in the development of this work. Its contributions included proposing and developing mathematical proof strategies, deriving and refining arguments, identifying potential gaps, generating and revising Lean 4 formalizations, assisting with debugging and the verification workflow, consulting relevant literature, and drafting and editing the manuscript. Its role therefore extended beyond language editing to substantive assistance with the mathematical proofs and their formalization. The formal verification claims are based on the recorded checker evidence described in Section~\ref{sec:lean}, not on assurances by the AI system; the external metatheoretical premises remain explicit. ChatGPT is not an author and does not bear responsibility for the work. Responsibility for the correctness, originality, interpretation, and final submitted content rests with the human author.
+
+\Needspace{20\baselineskip}
+\begin{thebibliography}{99}
+\small
+\setlength{\itemsep}{0pt}
+\bibitem{friedman} H. Friedman, On the necessary use of abstract set theory, \emph{Advances in Mathematics} \textbf{41} (1981), 209--280. \href{https://doi.org/10.1016/0001-8708(81)90021-9}{doi:10.1016/0001-8708(81)90021-9}.
+\bibitem{gitman} V. Gitman, Parameter-free schemes in second-order arithmetic, \emph{Journal of Symbolic Logic}, published online 2024. \href{https://doi.org/10.1017/jsl.2024.81}{doi:10.1017/jsl.2024.81}.
+\bibitem{simpson} S. G. Simpson, \emph{Subsystems of Second Order Arithmetic}, 2nd ed., Cambridge University Press and Association for Symbolic Logic, 2009, Chapter VII.
+\bibitem{kl} V. Kanovei and V. Lyubetsky, Notes on the equiconsistency of ZFC without the Power Set axiom and second-order arithmetic, \emph{Axioms} \textbf{14} (2025), 865. \href{https://doi.org/10.3390/axioms14120865}{doi:10.3390/axioms14120865}. Expanded preprint, \href{https://arxiv.org/abs/2507.11643v4}{arXiv:2507.11643v4}; theorem and lemma numbers cited in this paper refer to that version.
+\bibitem{kl2} V. Kanovei and V. Lyubetsky, Constructibility in the Simpson set theory without the local countability axiom, \emph{Mathematics} \textbf{14} (2026), 1499. \href{https://doi.org/10.3390/math14091499}{doi:10.3390/math14091499}.
+\bibitem{jech} T. Jech, \emph{Set Theory: The Third Millennium Edition, Revised and Expanded}, Springer, 2003.
+\bibitem{enderton} H. B. Enderton, \emph{A Mathematical Introduction to Logic}, 2nd ed., Academic Press, 2001.
+\bibitem{lean} L. de Moura and S. Ullrich, The Lean 4 theorem prover and programming language, in \emph{Automated Deduction---CADE 28}, Lecture Notes in Computer Science 12699, Springer, 2021, 625--635. \href{https://doi.org/10.1007/978-3-030-79876-5_37}{doi:10.1007/978-3-030-79876-5\_37}.
+\bibitem{mathlib} The mathlib Community, The Lean mathematical library, in \emph{Proceedings of the 9th ACM SIGPLAN International Conference on Certified Programs and Proofs}, ACM, 2020, 367--381. \href{https://doi.org/10.1145/3372885.3373824}{doi:10.1145/3372885.3373824}.
+\end{thebibliography}
+\end{document}

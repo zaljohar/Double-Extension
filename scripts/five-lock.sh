@@ -6,7 +6,7 @@ export LEAN_ABORT_ON_PANIC=1
 export LC_ALL=C.UTF-8
 out="$PWD/five-lock-evidence"
 mkdir -p "$out"
-rm -f "$out"/{PASS.txt,verdict.tsv,SHA256SUMS,tool-binaries.sha256}
+rm -f "$out"/{PASS.txt,verdict.tsv,SHA256SUMS,tool-binaries.sha256,semantic-verdict.tsv}
 exec > >(tee "$out/run.log") 2>&1
 printf 'lock\tresult\n' > "$out/verdict.tsv"
 record() { printf '%s\t%s\n' "$1" "$2" | tee -a "$out/verdict.tsv"; }
@@ -22,13 +22,17 @@ for bin in leanexport leanchecker leanchecker-paranoid con-leche con-ron nanoda_
   test -x "$prefix/bin/$bin" || { echo "Missing bundled checker: $bin"; exit 1; }
   sha256sum "$prefix/bin/$bin" >> "$out/tool-binaries.sha256"
 done
-cp lean-toolchain lakefile.toml lake-manifest.json comparator.json specification.sha256 "$out/"
+cp lean-toolchain lakefile.toml lake-manifest.json comparator.json specification.sha256 SEMANTIC_AUDIT.md "$out/"
 sha256sum DEST.lean DEST/*.lean Solution.lean Challenge.lean VerificationAudit.lean scripts/*.sh scripts/*.py .github/workflows/verify.yml > "$out/source.sha256"
 git rev-parse HEAD > "$out/git-commit.txt" 2>/dev/null || printf 'not a git checkout\n' > "$out/git-commit.txt"
 
 bash scripts/verify.sh 2>&1 | tee "$out/native-build-and-audit.log"
 cp axiom-audit.log "$out/"
 record 'Standard Lean (--trust=0) and axiom audit' PASS
+# Fail closed: no audit row is emitted unless all required proof and axiom reports exist.
+python3 scripts/semantic_report.py "$out/axiom-audit.log" "$out/semantic-verdict.tsv"
+cat "$out/semantic-verdict.tsv"
+record 'Dedicated semantic audit (S1-S7)' PASS
 
 # Challenge is a statement fixture, not a proof module. It is never imported
 # by Solution. The only intentional hole is in Challenge.lean.
@@ -36,6 +40,7 @@ lake build Challenge Solution 2>&1 | tee "$out/challenge-build.log"
 # Same focused root set used by Lean 4.36.0 Lake comparator (including the
 # primitive kernel names and the permitted axioms).
 targets=(Quot Quot.mk Quot.lift Quot.ind DESTVerification.exists_model
+  DESTSemantic.exists_audited_model DESTSemantic.exists_reference_model DESTSemantic.reference_consistent
   propext Classical.choice Quot.sound Nat.add Nat.sub Nat.mul Nat.pow Nat.gcd
   Nat.div Nat.mod Nat.beq Nat.ble Nat.land Nat.lor Nat.xor Nat.shiftLeft
   Nat.shiftRight String.ofList Char.ofNat List eagerReduce Nat String
@@ -94,8 +99,8 @@ record '5 NanoDa + lean4lean' PASS
 (cd "$out" && sha256sum -c SHA256SUMS)
 sha256sum -c "$out/source.sha256"
 sha256sum -c specification.sha256
-printf 'Standard Lean: PASS\nFive locks: 5/5 PASS\n' | tee "$out/PASS.txt"
+printf 'Standard Lean: PASS\nFormal semantic audit: 7/7 PASS (reference specification requires human review)\nFive locks: 5/5 PASS\n' | tee "$out/PASS.txt"
 cat "$out/isolation.txt" >> "$out/PASS.txt"
 if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
-  { echo '### DEST verification'; echo '```'; cat "$out/PASS.txt" "$out/verdict.tsv"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+  { echo '### DEST verification'; echo '```'; cat "$out/PASS.txt" "$out/semantic-verdict.tsv" "$out/verdict.tsv"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
 fi

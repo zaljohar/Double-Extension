@@ -1,4 +1,4 @@
-# Double Extension Set Theory (DEST)
+# Double Extension Set Theory (DEST) — semantic and five-lock verification
 
 Lean 4 formalization draft of the corrected double-extension theory and its
 well-founded first-membership model. Pinned to Lean/mathlib v4.36.0 for the five-lock verification tools.
@@ -51,14 +51,14 @@ membership relations. It is not induction on the second membership relation.
 
 1. Extract the full archive into the root of your repository and commit all files,
    including `.github/workflows/verify.yml`.
-2. Open **Actions → DEST five-lock verification**. It runs on push and pull request;
+2. Open **Actions → DEST semantic and five-lock verification**. It runs on push and pull request;
    it may also be launched manually.
-3. Inspect the standard build, axiom report and five locks. Download the
-   `DEST-five-lock-verification-evidence` artifact. A successful run must include
-   `PASS.txt`, `verdict.tsv`, comparator and individual kernel logs, the three
+3. Inspect the standard build, axiom report, semantic audit and five locks. Download the
+   `DEST-semantic-five-lock-verification-evidence` artifact. A successful run must include
+   `PASS.txt`, `verdict.tsv`, `semantic-verdict.tsv`, comparator and individual kernel logs, the three
    NDJSON exports, and SHA-256 checksums. A failed run does not get a PASS marker.
 4. The challenge fixture is deliberately incomplete: it states the obligation but
-   is not proof code. Only `Challenge.lean` may contain its single placeholder;
+   is not proof code. Only `Challenge.lean` may contain its four statement-fixture placeholders;
    it is never imported by `Solution.lean`. The solution source scan and axiom
    audit disallow proof holes and nonstandard axioms.
 
@@ -84,3 +84,15 @@ literal statement about arithmetic consistency predicates. The same construction
 works in ordinary ZFC with the set-sized ambient V_{omega_1}, as explained in
 `PROOF.md`. That is the mathematical relative-consistency argument. The precise
 arithmetization of `Con(ZFC) → Con(DEST)` is not part of this draft.
+
+## Independent semantic audit
+
+Read `SEMANTIC_AUDIT.md` before treating a green run as evidence of fidelity to
+DEST. The new files `DEST/ReferenceTheory.lean`, `DEST/ReferenceLogic.lean`, and
+`DEST/SemanticAudit.lean` formalize a separate closed-sentence reference theory,
+translation from every permitted formula, interpretation in the same model,
+induction and a syntactic soundness bridge. `Solution.lean` adds three audited
+endpoints without changing the original mathematical construction. Comparator
+checks all four endpoint statements and all five locks replay their proof export.
+The semantic report is mandatory, but natural-language specification review and
+the external ZFC-relative interpretation remain human mathematical tasks.

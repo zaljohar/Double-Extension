@@ -1,4 +1,4 @@
-# DEST five-lock verification
+# DEST semantic and five-lock verification
 
 **Status at packaging:** source and configuration prepared; no Lean executable
 or network to install Lean/mathlib was available in the authoring container.
@@ -19,17 +19,27 @@ This is not a claim about induction along the second membership relation.
 
 `DEST/Syntax.lean` contains the original first-language grammar/semantics,
 extracted unchanged from `Hull.lean`. The challenge imports only this syntax
-and the standalone specification, not the hull, matching, or model proof.
+and the standalone specification plus the independent reference logic, not the hull, matching, or model proof.
 `Solution.lean` proves the exact same named claim using the original proofs.
 `specification.sha256` records the frozen interface; do not alter it merely to
 make a failing proof pass. The hash is an integrity baseline, not a signature
 or protection from someone who can change the baseline itself. Review the
 specification before treating it as the intended mathematical statement.
 
-`Challenge.lean` has one deliberate `sorry` as a comparator statement fixture.
+`Challenge.lean` has four deliberate `sorry` placeholders as a comparator statement fixture.
 It must never be imported by the solution or used to prove anything. It is not
 an admitted proof in the model construction. The proof-source scan, axiom audit,
 and Comparator independently enforce the permitted axiom list on the solution.
+
+## Dedicated semantic gate
+
+See `SEMANTIC_AUDIT.md`. The standard build must prove the semantic bridge,
+reference-model existence, and soundness endpoints. Their axiom reports and
+the reference checksums are mandatory. `semantic-verdict.tsv` is written only
+when all expected formal obligations have acceptable kernel reports. The four
+statement targets are matched by Comparator and exported together for the five
+locks. Natural-language fidelity and the external ZFC interpretation still
+require review; no green badge can by itself certify that review.
 
 ## Five locks
 
@@ -62,7 +72,7 @@ enabled. On a trusted checkout only, a manual workflow dispatch can explicitly
 opt out if the runner cannot create namespaces. Such a run is marked REDUCED
 ISOLATION; do not represent it as a sandboxed verification.
 
-The endpoint is semantic existence in Lean's classical foundations. The ZFC
+The endpoints are semantic existence and syntactic consistency in the declared Hilbert calculus, in Lean's classical foundations. The ZFC
 relative-consistency interpretation is described in PROOF.md, not separately
 arithmetized in Lean. Even a green run does not automatically verify an arbitrary
 informal interpretation of the specification.

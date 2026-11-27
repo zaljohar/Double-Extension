@@ -1,6 +1,15 @@
 {
   "challenge_module": "Challenge",
   "solution_module": "Solution",
-  "theorem_names": ["DESTVerification.exists_model"],
-  "permitted_axioms": ["propext", "Classical.choice", "Quot.sound"]
+  "theorem_names": [
+    "DESTVerification.exists_model",
+    "DESTSemantic.exists_audited_model",
+    "DESTSemantic.exists_reference_model",
+    "DESTSemantic.reference_consistent"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+  ]
 }

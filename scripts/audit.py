@@ -11,7 +11,23 @@ expected = {
     'natural_induction', 'numeral_injective',
 }
 allowed = {'propext', 'Classical.choice', 'Quot.sound'}
-for name in sorted({'DEST.' + x for x in expected} | {'DESTVerification.exists_model'}):
+semantic = {
+    'DESTSemantic.first_extensionality_correct',
+    'DESTSemantic.second_extensionality_correct',
+    'DESTSemantic.comprehension_correct',
+    'DESTSemantic.uniformity_correct',
+    'DESTSemantic.setInduction_correct',
+
+    'DESTSemantic.first_language_translation', 'DESTSemantic.unary_translation',
+    'DESTReference.eval_rename', 'DESTReference.eval_atVar', 'DESTReference.eval_close',
+    'DESTSemantic.self_test_correct', 'DESTSemantic.extension_correct',
+    'DESTSemantic.allUniform_correct', 'DESTSemantic.zero_correct',
+    'DESTSemantic.succ_correct', 'DESTSemantic.inductive_correct', 'DESTSemantic.omega_correct',
+    'DESTSemantic.model_satisfies_reference', 'DESTReference.soundness',
+    'DESTReference.consistent_of_model', 'DESTSemantic.exists_audited_model',
+    'DESTSemantic.exists_reference_model', 'DESTSemantic.reference_consistent',
+}
+for name in sorted({'DEST.' + x for x in expected} | {'DESTVerification.exists_model'} | semantic):
     pattern = rf"['`]?{re.escape(name)}['`]?\s+depends on axioms:\s*\[([^\]]*)\]"
     match = re.search(pattern, report, re.S)
     if match:

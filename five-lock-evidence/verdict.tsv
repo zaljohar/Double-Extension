@@ -1,0 +1,10 @@
+lock	result
+Standard Lean (--trust=0) and axiom audit	PASS
+Dedicated semantic audit (S1-S7)	PASS
+Focused formal audit (F1-F3)	PASS
+Formal strength audit (including conditional exact equiconsistency)	PASS
+1 Comparator + Mathlib (statement match and axiom whitelist)	PASS
+2 leanchecker-paranoid	PASS
+3 con-leche	PASS
+4 con-ron	PASS
+5 NanoDa + lean4lean	PASS

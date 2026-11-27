@@ -33,3 +33,27 @@ Status: static repair only. The latest supplied log demonstrates compilation
 of the core model and reference logic; the revised semantic bridge and all
 subsequent verification stages require a fresh CI run. Lean is unavailable
 in the local preparation environment.
+
+
+# Obligation 3 repair
+
+- Parenthesized the reflection biconditional after the support guard in both
+  `DEST/WeakFragment.lean` and `Challenge.lean`. With Lean's original parsing,
+  reflecting falsity forced the countable carrier to contain all ambient sets.
+- Aligned the theorem signature with the challenge and refreshed the source
+  checksums. Narrowed the Mathlib imports and verified that the baseline proof
+  bodies and definitions match the supplied archive.
+- Repaired elaboration in the finite hull, rank, arithmetic, and Zermelo
+  modules so the complete project builds with Lean v4.36.0 at `--trust=0`.
+
+The axiom audit passed, including both Obligation 3 theorems. The written
+metatheory in `WEAK_METATHEORY.md` supplies the argument inside S.
+
+# Kernel-checked constructible-cut bridge
+
+`DESTSet.finite_fragment_inside` now uses Separation and Collection in the
+specified weak set model to construct the finite-fragment carrier and the
+second-membership graph. The internal proof works with its own natural
+numbers and establishes induction for formulas in both memberships.
+`DESTExact.z2_equiconsistency` applies the two explicit published reductions
+to derive the Henkin model-existence equivalence for both DEST theories.

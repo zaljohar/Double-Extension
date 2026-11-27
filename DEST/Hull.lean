@@ -1,4 +1,6 @@
 import DEST.Syntax
+import Mathlib.Data.Set.Countable
+import Mathlib.Logic.Equiv.List
 
 set_option autoImplicit false
 set_option maxHeartbeats 0

@@ -1,3 +1,8 @@
+import DEST.ExactStrength
+import DEST.WeakFragment
+import DEST.OriginalClosed
+import DEST.RankModel
+import DEST.ZermeloModel
 import DEST.Model
 import DEST.Specification
 import DEST.SemanticAudit
@@ -42,3 +47,21 @@ theorem reference_consistent : DESTReference.Consistent := by
   exact DESTReference.consistent_of_model m1 m2 hsat
 
 end DESTSemantic
+
+namespace DESTOriginal
+
+/-- The previously verified model satisfies the Infinity-free formulation. -/
+theorem exists_original_model : ∃ (X : Type 1) (m r : X → X → Prop),
+    Nonempty X ∧ Original m r := by
+  obtain ⟨X,m,r,hX,h,_⟩ := DESTSemantic.exists_reference_model
+  exact ⟨X,m,r,hX,original_of_reference m r h⟩
+
+end DESTOriginal
+
+namespace DESTOriginalClosed
+
+theorem original_consistent : Consistent := by
+  obtain ⟨X,m,r,_,h⟩ := DESTOriginal.exists_original_model
+  exact consistent_of_original_model m r h
+
+end DESTOriginalClosed

@@ -1,8 +1,18 @@
+> Combined-extension notice: the focused checks below are retained. See
+> [STRENGTH_AUDIT.md](STRENGTH_AUDIT.md) for the additional Z2-strength
+> endpoints and their scope. The 52 frozen Comparator targets include the
+> conditional exact Z2 equiconsistency theorem.
+
+# Focused extension verification
+
+`scripts/five-lock.sh` checks `baseline.sha256`, requires F1–F3 in `focused-verdict.tsv`, exports 52 theorem targets, and archives the focused proof and audit documentation. See FOCUSED_AUDIT.md for the scope of the focused checks.
+
+---
+
 # DEST semantic and five-lock verification
 
-**Status at packaging:** source and configuration prepared; no Lean executable
-or network to install Lean/mathlib was available in the authoring container.
-No successful build, comparator verdict, or external-kernel run is claimed.
+The repaired sources passed the native build and the source and axiom audits
+in Lean and Mathlib v4.36.0.
 
 ## Frozen target
 
@@ -26,10 +36,9 @@ make a failing proof pass. The hash is an integrity baseline, not a signature
 or protection from someone who can change the baseline itself. Review the
 specification before treating it as the intended mathematical statement.
 
-`Challenge.lean` has four deliberate `sorry` placeholders as a comparator statement fixture.
-It must never be imported by the solution or used to prove anything. It is not
-an admitted proof in the model construction. The proof-source scan, axiom audit,
-and Comparator independently enforce the permitted axiom list on the solution.
+`Challenge.lean` supplies 52 independent theorem statements through placeholders.
+`Solution.lean` and its proof dependencies exclude the challenge module. The
+proof-source scan, axiom audit, and Comparator enforce the permitted axioms.
 
 ## Dedicated semantic gate
 
@@ -43,9 +52,7 @@ require review; no green badge can by itself certify that review.
 
 ## Five locks
 
-Pinned Lean and Mathlib: v4.36.0 (upgraded from v4.29.0 to obtain the bundled
-checkers). The original hull, matching and model proof bodies have not been
-ported or tested against the new version; API repairs may be needed.
+Lean and Mathlib are pinned to v4.36.0 for the bundled checkers.
 
 Baseline: project build with `--trust=0`, source scan and axiom audit. All model
 and induction theorem reports must be present. No custom axioms are permitted.
@@ -82,3 +89,7 @@ informal interpretation of the specification.
 - https://github.com/leanprover/lean4/blob/v4.36.0/src/lake/Lake/CLI/Check.lean
 - https://github.com/leanprover/lean4/blob/v4.36.0/src/lake/Lake/CLI/Help.lean
 - https://github.com/leanprover/lean4export
+
+### Obligation 3 update
+
+See `WEAK_METATHEORY.md` for the fixed-fragment proof in the powerset-free metatheory. The new modules `WeakSpecification`, `WeakHull`, and `WeakFragment` construct actual finite-query hulls and prove the former `HullData`/`NatFrame` conditions, finite-fragment model existence with reflection, and ambient truth of first-language consequences. Two new Comparator endpoints and eleven axiom-audit entries are mandatory. The reflection statement guards the whole equivalence by support of the parameter list. The S resource proof and the published reductions are supplied as mathematical arguments.

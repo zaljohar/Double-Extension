@@ -1,4 +1,6 @@
-import Mathlib
+import Mathlib.Data.Fin.Basic
+import Mathlib.Tactic.Push
+import Mathlib.Tactic.Tauto
 
 /-! Independent reference language. This module does not import the DEST
 construction, its syntax, or its specification. Index 0 is the newest variable.

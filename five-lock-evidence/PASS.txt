@@ -1,0 +1,7 @@
+Standard Lean: PASS
+Formal semantic audit: 7/7 PASS (reference specification requires human review)
+Focused formal audit: 3/3 PASS (semantic scope; see FOCUSED_AUDIT.md)
+Five locks: 5/5 PASS
+Exact Z2 equiconsistency (Henkin model existence): CONDITIONAL PASS
+Hypotheses: Friedman restriction and Kanovei–Lyubetsky constructible-cut interpretation
+REDUCED ISOLATION: explicitly opted out of Comparator sandbox

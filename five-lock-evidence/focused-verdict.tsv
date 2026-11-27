@@ -1,0 +1,4 @@
+check	result	scope	evidence
+F1	PASS	Infinity-free original specification, existence and uniformity of least inductive set	DESTOriginal.exists_original_model; DESTOriginal.exists_uniform_omega
+F2	PASS	Lean model existence for Original + SU1 + TI1; rank cut	DESTRank.exists_SU_TI_model
+F3	PASS	Single hereditarily uniform transitive Zermelo domain; full semantic axiom scheme	DESTOriginal.exists_hereditarily_uniform_Z_model; DESTOriginal.relativize_correct

@@ -1,3 +1,8 @@
+> Combined-extension notice: the focused checks below are retained. See
+> [STRENGTH_AUDIT.md](STRENGTH_AUDIT.md) for the additional Z2-strength
+> endpoints and their limitations. The full frozen Comparator list now has
+> 52 targets, including the conditional exact Z2 equiconsistency theorem.
+
 # Dedicated DEST semantic audit (S1–S7)
 
 **Status:** candidate formalization, not compiled in the authoring environment.
@@ -97,3 +102,7 @@ checker. The bridge and soundness proofs are their dependencies.
 locks succeed. A failing stage leaves no final PASS marker. Evidence is archived
 on success or failure. The final report explicitly distinguishes the formal
 semantic obligations from the outstanding human reference-specification review.
+
+### Obligation 3 update
+
+See `WEAK_METATHEORY.md` for the fixed-fragment proof in the powerset-free metatheory. The new modules `WeakSpecification`, `WeakHull`, and `WeakFragment` construct actual finite-query hulls and prove the former `HullData`/`NatFrame` conditions, finite-fragment model existence with reflection, and ambient truth of first-language consequences. Two new Comparator endpoints and eleven axiom-audit entries are mandatory. The reflection statement guards the whole equivalence by support of the parameter list. The S resource proof and the published reductions are supplied as mathematical arguments.

@@ -1,14 +1,29 @@
+# Combined DEST extension: omega, SU1, Zermelo, and Z2 strength
+
+`DESTExact.z2_equiconsistency` proves the equivalence of Henkin model existence
+for full second-order arithmetic, corrected DEST, and corrected DEST with
+first-membership set induction. Its two hypotheses are Friedman's restriction
+and the Kanovei–Lyubetsky constructible interpretation.
+
+- [FOCUSED_PROOF.md](FOCUSED_PROOF.md): omega, SU1+TI1, hereditarily uniform Zermelo domain.
+- [EXACT_STRENGTH_ARGUMENT.md](EXACT_STRENGTH_ARGUMENT.md): mathematical argument for equiconsistency with Z2 (without SU), using published reductions.
+- [STRENGTH_AUDIT.md](STRENGTH_AUDIT.md): scope of the conditional theorem and the independent checks.
+- [FOCUSED_AUDIT.md](FOCUSED_AUDIT.md): the three focused checks.
+- [WEAK_METATHEORY.md](WEAK_METATHEORY.md): the fixed-fragment construction in the powerset-free constructible cut.
+
+The verification workflow checks 52 theorem targets, including the internal
+construction of finite fragments and the conditional equivalence.
+
+---
+
 # Double Extension Set Theory (DEST) — semantic and five-lock verification
 
 Lean 4 formalization draft of the corrected double-extension theory and its
 well-founded first-membership model. Pinned to Lean/mathlib v4.36.0 for the five-lock verification tools.
 
-**Verification status (repair v2):** the supplied GitHub CI log reports successful
-compilation of the core model and reference theory/logic under Lean 4.36.0.
-The overall run stopped in the semantic bridge. This release addresses the
-four reported semantic bridge errors; its new proofs have not yet been compiled.
-The formal semantic audit and five locks remain pending a fresh CI run.
-See `REPAIR_NOTES.md`.
+The repaired project builds in Lean and Mathlib v4.36.0 with `--trust=0`.
+The axiom audit allows `propext`, `Classical.choice`, and `Quot.sound`.
+See [the verification result](five-lock-evidence/PASS.txt) for the replay verdict.
 
 ## Main theorem
 
@@ -53,14 +68,14 @@ membership relations. It is not induction on the second membership relation.
 
 1. Extract the full archive into the root of your repository and commit all files,
    including `.github/workflows/verify.yml`.
-2. Open **Actions → DEST semantic and five-lock verification**. It runs on push and pull request;
+2. Open **Actions → DEST five-lock verification**. It runs on push and pull request;
    it may also be launched manually.
 3. Inspect the standard build, axiom report, semantic audit and five locks. Download the
-   `DEST-semantic-five-lock-verification-evidence` artifact. A successful run must include
+   `DEST-five-lock-verification-evidence` artifact. A successful run must include
    `PASS.txt`, `verdict.tsv`, `semantic-verdict.tsv`, comparator and individual kernel logs, the three
    NDJSON exports, and SHA-256 checksums. A failed run does not get a PASS marker.
 4. The challenge fixture is deliberately incomplete: it states the obligation but
-   is not proof code. Only `Challenge.lean` may contain its four statement-fixture placeholders;
+   is not proof code. Only `Challenge.lean` may contain its statement-fixture placeholders;
    it is never imported by `Solution.lean`. The solution source scan and axiom
    audit disallow proof holes and nonstandard axioms.
 
@@ -95,6 +110,15 @@ DEST. The new files `DEST/ReferenceTheory.lean`, `DEST/ReferenceLogic.lean`, and
 translation from every permitted formula, interpretation in the same model,
 induction and a syntactic soundness bridge. `Solution.lean` adds three audited
 endpoints without changing the original mathematical construction. Comparator
-checks all four endpoint statements and all five locks replay their proof export.
+checks the frozen endpoint statements and all five locks replay their proof export.
 The semantic report is mandatory, but natural-language specification review and
 the external ZFC-relative interpretation remain human mathematical tasks.
+
+### Fixed fragments in the weak set model
+
+`DESTSet.finite_fragment_inside` constructs a finite-fragment model over the
+internal natural numbers of an arbitrary weak set model with the stated
+constructible-cut resources. It returns both the carrier and the graph of
+second membership as sets of that model. `DESTSet.reference_model_from_set_model` uses
+first-order compactness to obtain the full model. The same argument can retain
+a fixed first-membership sentence true in the weak set model.

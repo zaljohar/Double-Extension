@@ -1,0 +1,1 @@
+REDUCED ISOLATION: explicitly opted out of Comparator sandbox

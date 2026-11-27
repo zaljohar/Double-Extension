@@ -1,0 +1,8 @@
+check	result	scope	evidence
+S1	PASS	Scoped language and capture-avoiding renaming	first_language_translation; eval_rename; eval_atVar
+S2	PASS	Closed reference axiom fidelity (formal)	first_extensionality_correct; second_extensionality_correct; comprehension_correct; uniformity_correct; self_test_correct; model_satisfies_reference
+S3	PASS	All finite parameter contexts and permitted formulas	unary_translation; eval_close
+S4	PASS	Same nonempty model	exists_audited_model; exists_reference_model
+S5	PASS	Full-language induction, first membership	zero_correct; succ_correct; omega_correct; setInduction_correct; model_satisfies_reference
+S6	PASS	Allowed axioms and frozen specification	audit.py; specification.sha256
+S7	PASS	Syntactic consistency in declared calculus	soundness; consistent_of_model; reference_consistent

@@ -1,4 +1,5 @@
-import Mathlib
+import Mathlib.SetTheory.ZFC.Basic
+import Mathlib.Tactic.DeriveCountable
 
 set_option autoImplicit false
 set_option maxHeartbeats 0

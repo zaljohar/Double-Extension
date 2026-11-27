@@ -56,7 +56,7 @@ $$
 a\subseteq_1b&:\Longleftrightarrow\forall x\,(x\in_1a\to x\in_1b),\\
 \operatorname{Zero}(z)&:\Longleftrightarrow\forall x\,\neg(x\in_1z),\\
 \operatorname{Succ}(a,b)&:\Longleftrightarrow\forall x\,(x\in_1b\leftrightarrow(x=a\lor x\in_1a)),\\
-\operatorname{Ind}(z,t)&:\Longleftrightarrowz\in_1t\land
+\operatorname{Ind}(z,t)&:\Longleftrightarrow z\in_1t\land
  \forall a\,(a\in_1t\to\exists b\,(b\in_1t\land\operatorname{Succ}(a,b))),\\
 \operatorname{N}_z(a)&:\Longleftrightarrow\forall t\,(\operatorname{Ind}(z,t)\to a\in_1t).
 \end{aligned}
@@ -218,9 +218,49 @@ The construction in this section must be carried out within a weak set-theoretic
 
 ## 5.1 The interpreted metatheory and its resources
 
-We use the interpretation of Kanovei and Lyubetsky [4], in particular Theorems 5.2 and 1.2 of the expanded preprint (version 4). Full second-order arithmetic without countable choice interprets their tree-based set theory $\mathsf{TMC}$; in it the constructible cut $L^*$ satisfies powerset-free ZFC with Collection. The cut is $L$ if the first uncountable ordinal of $L$ does not exist and $L_{\omega_1^L}$ otherwise. The distinction matters: one cannot simply assume the whole constructible universe satisfies Collection in the intermediate theory. The finite ordinals in the tree interpretation are the codes of the original numbers, and the cut is transitive and retains them. Consequently, the interpretation preserves first-order arithmetic, with addition and multiplication defined by the usual finite recursions. These features, rather than bare equiconsistency of the intermediate theories, are used below.
+We use the interpretation of Kanovei and Lyubetsky [4], in particular Theorems 5.2 and 1.2 of the expanded preprint (version 4). Full second-order arithmetic without countable choice interprets their tree-based set theory $\mathsf{TMC}$; in it the constructible cut $L^*$ satisfies powerset-free ZFC with Collection. The cut is $L$ if the first uncountable ordinal of $L$ does not exist and $L_{\omega_1^L}$ otherwise. The distinction matters: one cannot simply assume the whole constructible universe satisfies Collection in the intermediate theory. The stronger comparison of arithmetic consequences requires more than bare equiconsistency of the intermediate theories. We therefore verify explicitly that the tree interpretation and the constructible restriction preserve the entire number structure.
 
-Write $\mathcal S$ for the interpreted structure. The internal proof requires the following resources.
+<a id="lem:arithmetic-preservation"></a>
+**Lemma 5.1** (Preservation of arithmetic).
+Let $\mathcal A=(N,\mathcal R;0,S,+,\cdot)$ be any Henkin model of $\mathsf{Z}_2$, let $\mathcal V$ be its tree interpretation of $\mathsf{TMC}$ as in [4, Definition 5.1 and Theorem 5.2], and let $\mathcal S$ be the constructible cut $L^*$ of $\mathcal V$. The number structure of $\mathcal A$ is isomorphic to the von Neumann number structure of $\mathcal S$, with its usual recursively defined arithmetic. In particular, for every first-order arithmetic sentence $\sigma$,
+$$
+\mathcal A\models\sigma
+\quad\Longleftrightarrow\quad
+\mathcal S\models\sigma^*.
+$$
+
+
+*Proof.*
+All sequence coding in this proof is internal to $\mathcal A$. For $n\in N$, let $T_n$ be the tree of internally finite strictly decreasing sequences of numbers less than $n$. Let $T_\omega$ be the tree of all internally finite strictly decreasing sequences of numbers. Both definitions include the empty sequence. These are coded sets of numbers in $\mathcal R$ by arithmetical comprehension. None of these trees has an internally coded infinite branch: along a branch starting with $k$, induction would force its successive entries to decrease at least by one at each step, which is impossible after $k+1$ further steps. Thus each is a well-founded tree in the sense of the interpretation, even if $N$ is externally nonstandard.
+
+Write $[T]$ for the element of $\mathcal V$ represented by a tree $T$, modulo the bisimulation equivalence of [4, Definition 5.1]. The subtree of $T_n$ below its one-term node $\langle k\rangle$, with its first entry removed from each sequence, is exactly $T_k$ for $k<n$. The corresponding subtree of $T_\omega$ is $T_k$ for each $k\in N$. By the definition of interpreted membership, the following descriptions are exhaustive (with the displayed families understood externally):
+$$
+\begin{aligned}
+[T_n]&=\{[T_k]: k<n\},\\
+[T_\omega]&=\{[T_k]: k\in N\}.
+\end{aligned}
+$$
+Here and below, a description by members is justified by Extensionality in $\mathcal V$; it does not require a new set-existence principle. Consequently $[T_0]$ is the empty set and, for all $n\in N$,
+$$
+[T_{S(n)}]=[T_n]\cup\{[T_n]\}.
+$$
+If $k<n$, then $[T_k]\in[T_n]$; Foundation in $\mathcal V$ excludes equality in this case. Linearity of the arithmetic order therefore makes the assignment $j(n)=[T_n]$ injective.
+
+The object $[T_\omega]$ is inductive in $\mathcal V$. To see leastness, take any inductive object $a$ of $\mathcal V$, represented by a tree code $A$. The assertion $[T_n]\in a$ translates to a two-sorted formula with parameter $A$: the definition of $T_n$ is uniform in $n$, and interpreted membership is definable by the bisimulation relation. The assertion holds at zero and passes from $n$ to $S(n)$ by inductiveness. Full induction in $\mathcal A$ therefore gives $[T_n]\in a$ for every $n\in N$. This proves that $[T_\omega]$ is precisely the least inductive set $\omega^{\mathcal V}$ and that $j$ is a bijection from $N$ onto its members.
+
+It remains to check the constructible restriction. In the hierarchy used by Kanovei and Lyubetsky, the initial level for the empty real is $L_0[\varnothing]=\omega^{\mathcal V}\cup\{\varnothing\}=\omega^{\mathcal V}$; see equation (3) and Lemma 6.2 of [4]. The next level contains $\omega^{\mathcal V}$ itself, as the subset of the initial level defined by $x=x$. Both levels lie in $L^*$, since in the bounded case $\omega_1^L$ is greater than $1$. Thus $\omega^{\mathcal V}$ and all its members are retained. Empty set and successor agree in the cut and in $\mathcal V$ by transitivity. Every inductive object of the cut is also inductive in $\mathcal V$, since its members and their successor witnesses are retained. Hence $\omega^{\mathcal S}=\omega^{\mathcal V}$.
+
+Finally, the cut has the usual number operations, defined by the finite recursion graphs described in Lemma [4.2](#lem:recursion). Their existence in the cut follows from ordinary finite recursion in powerset-free set theory with Collection (Section [5.2](#sec:histories)), rather than from any DEST axiom. Denote these operations by $+_{\mathcal S}$ and $\cdot_{\mathcal S}$. Their zero and successor equations hold in $\mathcal S$. For fixed $a\in N$, the assertions comparing $j(a+n)$ with $j(a)+_{\mathcal S}j(n)$, and $j(a\cdot n)$ with $j(a)\cdot_{\mathcal S}j(n)$, are definable in $\mathcal A$: the numeral codes, the tree interpretation and the constructible cut are definable there. Induction on $n$ in $\mathcal A$, first for addition and then for multiplication, yields
+$$
+\begin{aligned}
+j(a+n)&=j(a)+_{\mathcal S}j(n),\\
+j(a\cdot n)&=j(a)\cdot_{\mathcal S}j(n).
+\end{aligned}
+$$
+The base cases use zero preservation, and the successor steps use successor preservation and the respective recursion equations (and addition preservation for multiplication). Thus $j$ preserves all the arithmetic primitives. If order is included, it is preserved by the membership description of the numerals. Induction on the syntax of a first-order arithmetic formula now gives the stated truth equivalence, since its number quantifiers range over domains in bijective correspondence. No induction over externally standard numerals, nor any external countable-choice principle for selecting their codes, is used.
+◻
+
+Write $\mathcal S$ for the constructible cut in Lemma [5.1](#lem:arithmetic-preservation). The internal proof requires the following resources.
 
 **(R1)** Extensionality, Empty Set, Adjunction, Union, Infinity with a least inductive set $\omega$, Foundation, and full Separation and Collection for definable formulas. The usual set operations including finite Cartesian products are available.
 
@@ -291,7 +331,7 @@ $$
  where $k_\varphi$ is the parameter arity. All elements of $J$ are subsets of $d$. The right-hand family exists by finite products, Separation and Collection; alternatively, as in the Lean construction, take a larger reflecting region containing $d$ and closed under the requests for the extensions of all parameter tuples, and separate $J$ from that region. The singleton sets are obtained by adjunction in the larger region. This family contains only the requested extensions and the indicated singletons, rather than the entire ambient powerset of $d$.
 
 <a id="lem:fresh"></a>
-**Lemma 5.1** (Availability of fresh matches). *In the notation above the following statements hold.*
+**Lemma 5.2** (Availability of fresh matches). *In the notation above the following statements hold.*
 
 1.  *If $E\in J$ is protected, its defining class has no ambient representative, and $E\notin d$.*
 
@@ -320,11 +360,11 @@ $$
 a\ne E\quad\land\quad(E\text{ is protected}\;\to\;a\in E).\tag{5.2}
 $$
 
- By Lemma [5.1](#lem:fresh)(c,d), both $O$ and $J$ are nonempty. They admit internal enumerations by (R4). We construct a bijection $f:O\to J$ whose graph consists of admissible matches. Each internally finite partial matching state includes a forbidden set $b\in d$ of used left points and singleton indices of any used singleton outputs from $O$. Start with the empty matching and the empty forbidden set. At each step, any additional forbidden points are in $d$, so adjunction closure keeps the forbidden set in $d$. For a used singleton output $\{x\}$, its index $x\in O$ is unique. Whether an output has this form is a definable test, and the set is updated accordingly.
+ By Lemma [5.2](#lem:fresh)(c,d), both $O$ and $J$ are nonempty. They admit internal enumerations by (R4). We construct a bijection $f:O\to J$ whose graph consists of admissible matches. Each internally finite partial matching state includes a forbidden set $b\in d$ of used left points and singleton indices of any used singleton outputs from $O$. Start with the empty matching and the empty forbidden set. At each step, any additional forbidden points are in $d$, so adjunction closure keeps the forbidden set in $d$. For a used singleton output $\{x\}$, its index $x\in O$ is unique. Whether an output has this form is a definable test, and the set is updated accordingly.
 
-For the next left point $a$, do nothing if it is matched. Otherwise choose an unused singleton output $\{x\}$ with $x\in O$ outside the forbidden set. Also exclude the unique possible $x$ such that $a=\{x\}$, by adjoining that index to the forbidden set if it lies in $d$. Lemma [5.1](#lem:fresh)(c,d) ensures the required singleton exists, is unprotected and belongs to $J$. The new pair is admissible.
+For the next left point $a$, do nothing if it is matched. Otherwise choose an unused singleton output $\{x\}$ with $x\in O$ outside the forbidden set. Also exclude the unique possible $x$ such that $a=\{x\}$, by adjoining that index to the forbidden set if it lies in $d$. Lemma [5.2](#lem:fresh)(c,d) ensures the required singleton exists, is unprotected and belongs to $J$. The new pair is admissible.
 
-For the next right point $E$, do nothing if it is already matched. Otherwise, if $E$ is protected, choose $a\in E\cap O$ outside the forbidden set by Lemma [5.1](#lem:fresh)(b); $a\ne E$ by (a). If $E$ is not protected, choose $a\in O$ outside the forbidden set, also excluding $E$ if $E\in d$. Lemma [5.1](#lem:fresh)(c) gives such an $a$. In either case the new pair is admissible. The update preserves injectivity and enlarges the matching, and updates the forbidden set to include the newly used points or singleton indices, as appropriate.
+For the next right point $E$, do nothing if it is already matched. Otherwise, if $E$ is protected, choose $a\in E\cap O$ outside the forbidden set by Lemma [5.2](#lem:fresh)(b); $a\ne E$ by (a). If $E$ is not protected, choose $a\in O$ outside the forbidden set, also excluding $E$ if $E\in d$. Lemma [5.2](#lem:fresh)(c) gives such an $a$. In either case the new pair is admissible. The update preserves injectivity and enlarges the matching, and updates the forbidden set to include the newly used points or singleton indices, as appropriate.
 
 Choose witnesses by the definable least-witness operation, or the least eligible index of the relevant enumeration. Perform a left step and a right step at each natural-number stage. The update is definable because $Q$ is a fixed finite list and the tests of membership, equality, protection and availability are first-order formulas. Section [5.2](#sec:histories) supplies internal histories, and induction verifies their finite matching invariants and monotonicity. The union of the compatible graphs is an internal function: any two recorded pairs occur together at a common later stage and hence obey functionality and injectivity. Each point in either enumeration is handled at its corresponding stage. Thus the union is the desired bijection, with a graph that is a set in $\mathcal S$. This argument uses internal induction, including at nonstandard indices; it does not rely on an external enumeration of the domain.
 
@@ -354,13 +394,13 @@ $$
 ## 5.5 Axioms and preservation of arithmetic
 
 <a id="thm:fragment"></a>
-**Theorem 5.2** (Internal fragment model). *For every fixed finite family $Q$ of first-language defining formulas and every first-language sentence $s$, the resources (R1)--(R4) suffice to construct a set-coded structure $\mathcal D=(d,\in_1,\in_2)$ satisfying both extensionality axioms, comprehension and uniformity for $Q$, and every externally fixed instance of relational natural-number induction and first-membership set induction. Moreover, $\mathcal D\models s$ if and only if $\mathcal S\models s$.*
+**Theorem 5.3** (Internal fragment model). *For every fixed finite family $Q$ of first-language defining formulas and every first-language sentence $s$, the resources (R1)--(R4) suffice to construct a set-coded structure $\mathcal D=(d,\in_1,\in_2)$ satisfying both extensionality axioms, comprehension and uniformity for $Q$, and every externally fixed instance of relational natural-number induction and first-membership set induction. Moreover, $\mathcal D\models s$ if and only if $\mathcal S\models s$.*
 
 *Proof.* First Extensionality follows from transitivity of $d$; Second Extensionality from injectivity of $F$. Every requested extension is in $u$ or $J$, hence has a representative under $F$. This proves comprehension. Suppose the parameters of a requested instance of uniformity are uniform, and its extension is $E=F(a)$. By [\[eq:fixed\]](#eq:fixed){reference-type="eqref" reference="eq:fixed"}, the parameters lie in $u$, so $E$ is protected. If $a\notin u$, admissibility implies $a\in E$, i.e. $a\in_2a$. Therefore the non-self-membership premise forces $a\in u$, which is precisely uniformity.
 
 The empty object, all the internal numbers of $\mathcal S$, and its least inductive set $\omega$ belong to $d$. The successors of these numbers are present in $d$; the restricted successor relation agrees with the ambient one, because of transitivity and extensionality. The inherited $\omega$ is inductive. For any object $t$ that is inductive in $d$, internal induction in $\mathcal S$ proves that it contains every number: the base follows from inductiveness, and any successor witness in $d$ must be the actual successor. Hence $\omega$ is the least inductive object of $\mathcal D$. The domain defined by $\operatorname{N}_z$ in (B5) therefore agrees exactly with the internal numbers of $\mathcal S$. For any fixed induction formula, relativize its quantifiers to $d$ and replace second membership by the definable relation [\[eq:relations\]](#eq:relations){reference-type="eqref" reference="eq:relations"}. This is a formula in $\mathcal S$, so its natural-number induction applies and verifies (B5). For $\mathsf{TI}_1$, separate the set of counterexamples inside $d$. If it is nonempty, it has a membership-minimal element by ambient Foundation. This contradicts progressiveness, since the inherited relation is ambient membership restricted to $d$. These arguments allow arbitrary parameters and both membership symbols. Finally, $s$ is first-language, so [\[eq:reflect\]](#eq:reflect){reference-type="eqref" reference="eq:reflect"} gives its preservation independently of $F$. ◻
 
-**Remark 5.3** (Why this is a weak-metatheory construction). Only extensions of fixed formulas over specified sets are collected. The fresh-witness argument uses nonrepresentability and Separation, not a cardinality estimate for an ambient proper class. The matching uses set-coded enumerations and internally finite histories, not external choice or a set of all partial maps. The graph of second membership and the induction counterexamples are sets of the weak model. These facts are necessary to apply internal Foundation and induction. Merely showing that a matching exists externally would not suffice.
+**Remark 5.4** (Why this is a weak-metatheory construction). Only extensions of fixed formulas over specified sets are collected. The fresh-witness argument uses nonrepresentability and Separation, not a cardinality estimate for an ambient proper class. The matching uses set-coded enumerations and internally finite histories, not external choice or a set of all partial maps. The graph of second membership and the induction counterexamples are sets of the weak model. These facts are necessary to apply internal Foundation and induction. Merely showing that a matching exists externally would not suffice.
 
 <a id="sec:exact"></a>
 # 6. Exact arithmetic strength
@@ -368,9 +408,9 @@ The empty object, all the internal numbers of $\mathcal S$, and its least induct
 <a id="thm:upper"></a>
 **Theorem 6.1** (Upper bound and arithmetic preservation). *For any first-order arithmetic sentence $\sigma$, if $T\vdash\sigma^*$ then $\mathsf{Z}_2\vdash\sigma$. Also, any Henkin model of $\mathsf{Z}_2$ yields, externally, a model of $T$.*
 
-*Proof.* Fix a finite derivation of $\sigma^*$ in $T$. There are finitely many comprehension and uniformity formulas in it; let $Q$ contain them. Choose $s=\sigma^*$ in Theorem [5.2](#thm:fragment). Given any model of $\mathsf{Z}_2$, apply the published tree interpretation and pass to the constructible cut to obtain a weak set model with (R1)--(R4). The theorem gives an internal model of the finite axiom support of the derivation, retaining the truth of $s$. Ordinary soundness applied to that finite derivation yields $\mathcal D\models\sigma^*$, so $\mathcal S\models\sigma^*$. In $\mathcal S$ the translation of arithmetic is the ordinary von Neumann arithmetic: zero, successor and least inductive object are the standard internal definitions, and the recursion graphs define the ordinary addition and multiplication by their unique recursion values. Preservation of the number domain under the published interpretation therefore implies that the original arithmetic model satisfies $\sigma$. Since the model of $\mathsf{Z}_2$ was arbitrary, first-order completeness gives $\mathsf{Z}_2\vdash\sigma$.
+*Proof.* Fix a finite derivation of $\sigma^*$ in $T$. There are finitely many comprehension and uniformity formulas in it; let $Q$ contain them. Choose $s=\sigma^*$ in Theorem [5.3](#thm:fragment). Given any model of $\mathsf{Z}_2$, apply the published tree interpretation and pass to the constructible cut to obtain a weak set model with (R1)--(R4). The theorem gives an internal model of the finite axiom support of the derivation, retaining the truth of $s$. Ordinary soundness applied to that finite derivation yields $\mathcal D\models\sigma^*$, so $\mathcal S\models\sigma^*$. Lemma [5.1](#lem:arithmetic-preservation) identifies the von Neumann interpretation of arithmetic in $\mathcal S$ with the original number structure, including its addition and multiplication. Hence the original arithmetic model satisfies $\sigma$. Since the model of $\mathsf{Z}_2$ was arbitrary, first-order completeness gives $\mathsf{Z}_2\vdash\sigma$.
 
-For the second assertion, start with any model of $\mathsf{Z}_2$ and its interpreted weak set model. Every externally specified finite subset of $T$ has a model by Theorem [5.2](#thm:fragment), taking $s$ to be a logical truth. Classical first-order compactness (see [7]), used externally, supplies one model of $T$. This step does not assert that the interpreted weak theory proves a single internal truth predicate for all fragments, nor that $\mathsf{Z}_2$ proves $\operatorname{Con}(T)$. ◻
+For the second assertion, start with any model of $\mathsf{Z}_2$ and its interpreted weak set model. Every externally specified finite subset of $T$ has a model by Theorem [5.3](#thm:fragment), taking $s$ to be a logical truth. Classical first-order compactness (see [7]), used externally, supplies one model of $T$. This step does not assert that the interpreted weak theory proves a single internal truth predicate for all fragments, nor that $\mathsf{Z}_2$ proves $\operatorname{Con}(T)$. ◻
 
 <a id="cor:exact"></a>
 **Corollary 6.2** (Equiconsistency and equal arithmetic consequences). *For every first-order arithmetic sentence $\sigma$, 
@@ -418,7 +458,7 @@ $$
 
  For an unmatched left point, use a fresh unprotected singleton, avoiding its first trace. For an unmatched right point, use a fresh member outside $U$ of the extension if it is protected (its trace cannot equal that extension), and otherwise any fresh outside point avoiding the at most one point with that trace. The properties just proved ensure all choices. This produces a bijection $F:M\to D$ such that $F(a)=E(a)$ exactly on $U$.
 
-Let $x\in_1a$ mean $x\in a$ in the inherited structure and $x\in_2a$ mean $x\in F(a)$. Both Extensionalities hold, and surjectivity realizes comprehension. Uniform objects are precisely $U$, and the protected-extension condition gives all requested uniformity instances, as in Theorem [5.2](#thm:fragment).
+Let $x\in_1a$ mean $x\in a$ in the inherited structure and $x\in_2a$ mean $x\in F(a)$. Both Extensionalities hold, and surjectivity realizes comprehension. Uniform objects are precisely $U$, and the protected-extension condition gives all requested uniformity instances, as in Theorem [5.3](#thm:fragment).
 
 To verify $\mathsf{US}_1$, suppose $a\in U$ and the first trace of $b$ is included in that of $a$. Elementarity implies $V_\beta\models b\subseteq a$, hence $b\subseteq a$ in the ambient universe by transitivity. Since $a\in V_\alpha$, rank monotonicity for subsethood gives $b\in V_\alpha$, so $b\in U$. This is precisely $\mathsf{US}_1$. The first relation is well-founded in the ambient metatheory, so every instance of $\mathsf{TI}_1$ holds, even for formulas involving the second relation. The included finite ordinals and $\omega$ give the least inductive object and natural-number induction as before (here the internal naturals are the actual naturals of the ambient construction).
 
@@ -548,7 +588,7 @@ $$
 \end{gathered}
 $$
 
- The external propositions are explicit arguments of the theorem, not new foundational axioms admitted by the checker. The mathematical argument for discharging those premises uses the published results cited in Sections [4](#sec:arith) and [5](#sec:upper). The separate formal theorem `DESTExact.consistency_from_z2_model` yields syntactic consistency of the two declared DEST calculi from a Henkin model of $\mathsf{Z}_2$ and the constructible-interpretation premise. Ordinary first-order completeness externally relates the model-existence equivalence to the usual equiconsistency statement. The stronger number-preserving comparison in Corollary [6.2](#cor:exact) is the mathematical argument in this paper; it is not itself the exact type of `DESTExact.z2_equiconsistency`.
+ The external propositions are explicit arguments of the theorem, not new foundational axioms admitted by the checker. The mathematical argument for discharging those premises uses the published results cited in Sections [4](#sec:arith) and [5](#sec:upper). The separate formal theorem `DESTExact.consistency_from_z2_model` yields syntactic consistency of the two declared DEST calculi from a Henkin model of $\mathsf{Z}_2$ and the constructible-interpretation premise. Ordinary first-order completeness externally relates the model-existence equivalence to the usual equiconsistency statement. The stronger number-preserving comparison in Corollary [6.2](#cor:exact), including the arithmetic-preservation argument in Lemma [5.1](#lem:arithmetic-preservation), is supplied mathematically in this paper; it is not itself the exact type of `DESTExact.z2_equiconsistency`. No separate kernel verification of that lemma is claimed.
 
 ## 9.3 Recorded verification evidence
 

@@ -92,6 +92,18 @@ theorem unary_translation (D : Set DEST.A) (r : D → D → Prop) {n : ℕ}
 section Semantics
 variable {X : Type u} (m1 m2 : X → X → Prop)
 
+/-- The second newest variable is written as the numeral `1` after
+    simplification of a nested binder. Express its evaluation explicitly:
+    the existing `push_succ` rule matches the successor form, not necessarily
+    the numeral form produced by the simplifier. -/
+@[simp] theorem push_push_one (a b : X) {n : ℕ} (v : Fin n → X) :
+    push a (push b v) (1 : Fin (n+2)) = b := by
+  have h : (1 : Fin (n+2)) = (0 : Fin (n+1)).succ := by
+    apply Fin.ext
+    change 1 % (n+2) = 1
+    exact Nat.mod_eq_of_lt (by omega)
+  rw [h, push_succ, push_zero]
+
 @[simp] theorem uniformF_correct {n : ℕ} (i : Fin n) (v : Fin n → X) :
     (uniformF i).eval m1 m2 v ↔ ∀ y, m1 y (v i) ↔ m2 y (v i) := by
   simp [uniformF, Formula.eval]
@@ -115,7 +127,7 @@ variable {X : Type u} (m1 m2 : X → X → Prop)
 @[simp] theorem extension_correct {n : ℕ} (p : Formula (n+1)) (x : X) (v : Fin n → X) :
     (extensionF p).eval m1 m2 (push x v) ↔
       ∀ y : X, m2 y x ↔ p.eval m1 m2 (push y v) := by
-  simp [extensionF, Formula.eval]
+  simp [extensionF, Formula.eval, push_push_one]
 
 /-- S2: the literal capture-avoiding self test equals non-self-membership
     under the comprehension condition. This is a theorem, not a convention. -/
@@ -132,14 +144,14 @@ theorem self_test_correct {n : ℕ} (p : Formula (n+1)) (x : X) (v : Fin n → X
 @[simp] theorem inductive_correct {n : ℕ} (i j : Fin n) (v : Fin n → X) :
     (inductiveF i j).eval m1 m2 v ↔ m1 (v i) (v j) ∧
       ∀ a, m1 a (v j) → ∃ b, m1 b (v j) ∧ (∀ c, m1 c b ↔ c = a ∨ m1 c a) := by
-  simp [inductiveF, Formula.eval]
+  simp [inductiveF, Formula.eval, push_push_one]
 @[simp] theorem omega_correct {n : ℕ} (i j : Fin n) (v : Fin n → X) :
     (omegaF i j).eval m1 m2 v ↔
       (m1 (v i) (v j) ∧ ∀ a, m1 a (v j) → ∃ b, m1 b (v j) ∧
         (∀ c, m1 c b ↔ c = a ∨ m1 c a)) ∧
       (∀ t, (m1 (v i) t ∧ ∀ a, m1 a t → ∃ b, m1 b t ∧
         (∀ c, m1 c b ↔ c = a ∨ m1 c a)) → ∀ a, m1 a (v j) → m1 a t) := by
-  simp [omegaF, Formula.eval]
+  simp [omegaF, Formula.eval, push_push_one]
 /-- Explicit correspondence of the closed comprehension sentence with its
     intended universally closed scheme. -/
 theorem comprehension_correct {n : ℕ} (p : Formula (n+1)) :
@@ -152,7 +164,7 @@ theorem uniformity_correct {n : ℕ} (p : Formula (n+1)) :
       ∀ v : Fin n → X, (∀ i : Fin n, ∀ y, m1 y (v i) ↔ m2 y (v i)) →
       ∀ a : X, (∀ y, m2 y a ↔ p.eval m1 m2 (push y v)) →
       ¬ p.eval m1 m2 (push a v) → ∀ y, m1 y a ↔ m2 y a := by
-  simp only [uniformity, eval_close, Formula.eval, allUniform_correct,
+  simp only [DESTReference.uniformity, eval_close, Formula.eval, allUniform_correct,
     extension_correct, eval_neg, uniformF_correct, push_zero]
 
 theorem first_extensionality_correct :
